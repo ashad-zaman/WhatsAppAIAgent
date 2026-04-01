@@ -1,0 +1,699 @@
+# Production Kubernetes Deployment - Core Infrastructure
+
+---
+# Namespace with resource quotas
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: whatsapp-ai
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    app.kubernetes.io/managed-by: kubectl
+    environment: production
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: whatsapp-ai-data
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    environment: production
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/name: monitoring
+
+---
+# ResourceQuota - Namespace resource limits
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: whatsapp-ai-quota
+  namespace: whatsapp-ai
+spec:
+  hard:
+    requests.cpu: "40"
+    requests.memory: 80Gi
+    limits.cpu: "80"
+    limits.memory: 160Gi
+    persistentvolumeclaims: "10"
+    services.loadbalancers: "5"
+    services.nodeports: "0"
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: whatsapp-ai-data-quota
+  namespace: whatsapp-ai-data
+spec:
+  hard:
+    requests.storage: "100Gi"
+    persistentvolumeclaims: "5"
+
+---
+# LimitRange - Container defaults
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: whatsapp-ai-limits
+  namespace: whatsapp-ai
+spec:
+  limits:
+    - max:
+        cpu: "8"
+        memory: 8Gi
+      min:
+        cpu: "50m"
+        memory: 64Mi
+      default:
+        cpu: 500m
+        memory: 512Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 128Mi
+      type: Container
+    - max:
+        storage: 50Gi
+      min:
+        storage: 1Gi
+      type: PersistentVolumeClaim
+
+---
+# ServiceAccount - API Gateway
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api-gateway-sa
+  namespace: whatsapp-ai
+  labels:
+    app: api-gateway
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agent-service-sa
+  namespace: whatsapp-ai
+  labels:
+    app: agent-service
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rag-service-sa
+  namespace: whatsapp-ai
+  labels:
+    app: rag-service
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: messaging-service-sa
+  namespace: whatsapp-ai
+  labels:
+    app: messaging-service
+
+---
+# ClusterRole - Metrics reader
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: metrics-reader
+  labels:
+    app: whatsapp-ai-platform
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "nodes/metrics", "nodes/proxy"]
+    verbs: ["get", "list"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list"]
+
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metrics-reader-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metrics-reader
+subjects:
+  - kind: ServiceAccount
+    name: api-gateway-sa
+    namespace: whatsapp-ai
+  - kind: ServiceAccount
+    name: agent-service-sa
+    namespace: whatsapp-ai
+  - kind: ServiceAccount
+    name: rag-service-sa
+    namespace: whatsapp-ai
+  - kind: ServiceAccount
+    name: messaging-service-sa
+    namespace: whatsapp-ai
+
+---
+# Role - Namespace admin
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: namespace-admin
+  namespace: whatsapp-ai
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets", "services"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: namespace-admin-binding
+  namespace: whatsapp-ai
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: namespace-admin
+subjects:
+  - kind: ServiceAccount
+    name: api-gateway-sa
+    namespace: whatsapp-ai
+
+---
+# NetworkPolicy - API Gateway (ingress only from ingress controller)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-gateway-network-policy
+  namespace: whatsapp-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: api-gateway
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 3000
+    - from:
+        - podSelector:
+            matchLabels:
+              app: dashboard
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: agent-service
+      ports:
+        - protocol: TCP
+          port: 3001
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rag-service
+      ports:
+        - protocol: TCP
+          port: 3002
+    - to:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - protocol: TCP
+          port: 3003
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: whatsapp-ai-data
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6379
+        - protocol: TCP
+          port: 27017
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+
+---
+# NetworkPolicy - Agent Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: agent-service-network-policy
+  namespace: whatsapp-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: agent-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 3001
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rag-service
+      ports:
+        - protocol: TCP
+          port: 3002
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: whatsapp-ai-data
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+# NetworkPolicy - RAG Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rag-service-network-policy
+  namespace: whatsapp-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: rag-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+        - podSelector:
+            matchLabels:
+              app: agent-service
+      ports:
+        - protocol: TCP
+          port: 3002
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: whatsapp-ai-data
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6333
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+# NetworkPolicy - Messaging Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: messaging-service-network-policy
+  namespace: whatsapp-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: messaging-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 3003
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: whatsapp-ai-data
+      ports:
+        - protocol: TCP
+          port: 6379
+        - protocol: TCP
+          port: 9092
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+# NetworkPolicy - Default deny all
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: whatsapp-ai
+spec:
+  podSelector: {}
+
+---
+# PersistentVolumeClaim - PostgreSQL
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: whatsapp-ai-data
+  labels:
+    app: postgresql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+# PersistentVolumeClaim - MongoDB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-data
+  namespace: whatsapp-ai-data
+  labels:
+    app: mongodb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+# PersistentVolumeClaim - Redis
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: whatsapp-ai-data
+  labels:
+    app: redis
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# ConfigMap - Application Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whatsapp-ai-config
+  namespace: whatsapp-ai
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  ENABLE_METRICS: "true"
+  ENABLE_TRACING: "true"
+  CACHE_TTL: "300"
+  RATE_LIMIT_MAX: "100"
+  RATE_LIMIT_WINDOW_MS: "60000"
+---
+# ConfigMap - Database configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-config
+  namespace: whatsapp-ai-data
+data:
+  POSTGRES_MAX_CONNECTIONS: "100"
+  POSTGRES_IDLE_TIMEOUT: "30000"
+  POSTGRES_CONNECTION_TIMEOUT: "10000"
+  MONGODB_POOL_SIZE: "50"
+  MONGODB_MIN_POOL_SIZE: "10"
+  REDIS_POOL_SIZE: "20"
+---
+# Secret - TLS Certificate reference
+apiVersion: v1
+kind: Secret
+metadata:
+  name: whatsapp-ai-tls
+  namespace: whatsapp-ai
+type: kubernetes.io/tls
+data:
+  tls.crt: BASE64_ENCODED_CERT
+  tls.key: BASE64_ENCODED_KEY
+
+---
+# IngressClass
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+  labels:
+    app.kubernetes.io/name: nginx
+spec:
+  controller: k8s.io/ingress-nginx
+
+---
+# Ingress - Production
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: whatsapp-ai-ingress
+  namespace: whatsapp-ai
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/acme-challenge-type: http01
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.whatsapp-ai.com
+        - app.whatsapp-ai.com
+        - dashboard.whatsapp-ai.com
+      secretName: whatsapp-ai-tls
+  rules:
+    - host: api.whatsapp-ai.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 80
+    - host: app.whatsapp-ai.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dashboard
+                port:
+                  number: 80
+
+---
+# Service - API Gateway
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: whatsapp-ai
+  labels:
+    app: api-gateway
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: "60"
+spec:
+  type: LoadBalancer
+  selector:
+    app: api-gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 3000
+      protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+
+---
+# Service - Agent Service (internal)
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-service
+  namespace: whatsapp-ai
+  labels:
+    app: agent-service
+spec:
+  type: ClusterIP
+  selector:
+    app: agent-service
+  ports:
+    - name: http
+      port: 3001
+      targetPort: 3001
+      protocol: TCP
+
+---
+# Service - RAG Service (internal)
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-service
+  namespace: whatsapp-ai
+  labels:
+    app: rag-service
+spec:
+  type: ClusterIP
+  selector:
+    app: rag-service
+  ports:
+    - name: http
+      port: 3002
+      targetPort: 3002
+      protocol: TCP
+
+---
+# Service - Messaging Service (internal)
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service
+  namespace: whatsapp-ai
+  labels:
+    app: messaging-service
+spec:
+  type: ClusterIP
+  selector:
+    app: messaging-service
+  ports:
+    - name: http
+      port: 3003
+      targetPort: 3003
+      protocol: TCP
+
+---
+# Service - Dashboard
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+  namespace: whatsapp-ai
+  labels:
+    app: dashboard
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+spec:
+  type: LoadBalancer
+  selector:
+    app: dashboard
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+
+---
+# ServiceMonitor - Prometheus scraping
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: api-gateway-monitor
+  namespace: whatsapp-ai
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - whatsapp-ai
+
+---
+# PodMonitor - Custom metrics
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: agent-service-monitor
+  namespace: whatsapp-ai
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: agent-service
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

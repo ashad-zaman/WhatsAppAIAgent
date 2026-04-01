@@ -1,0 +1,14 @@
+{
+  "name": "@whatsapp-ai/gdpr",
+  "version": "1.0.0",
+  "description": "GDPR compliance utilities for WhatsApp AI platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "date-fns": "^3.0.0"
+  }
+}

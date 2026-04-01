@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022", "dom"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./apps/dashboard/src/*"],
+      "@whatsapp-ai/*": ["./packages/*/src"]
+    }
+  },
+  "include": ["unit/**/*.ts", "unit/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

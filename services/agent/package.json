@@ -1,0 +1,27 @@
+{
+  "name": "@whatsapp-ai/agent-service",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@whatsapp-ai/common": "workspace:*",
+    "@whatsapp-ai/config": "workspace:*",
+    "@whatsapp-ai/ai": "workspace:*",
+    "@whatsapp-ai/database": "workspace:*",
+    "@whatsapp-ai/queue": "workspace:*",
+    "@whatsapp-ai/events": "workspace:*",
+    "@langchain/langgraph": "^1.2.6",
+    "@langchain/core": "^0.1.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}

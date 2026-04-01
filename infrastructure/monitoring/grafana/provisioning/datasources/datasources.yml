@@ -1,0 +1,49 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: false
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - name: TraceID
+          matcherRegex: '"traceId":"([^"]+)"'
+          url: 'http://grafana:3000/explore?panes=[]&schemaVersion=1&orgId=1'
+          datasourceUid: Tempo
+
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3100
+    editable: false
+    jsonData:
+      serviceMap:
+        datasourceUid: Prometheus
+      nodeGraph:
+        enabled: true
+
+  - name: PostgreSQL
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    database: whatsappai
+    user: ${POSTGRES_USER}
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}
+    editable: false
+    jsonData:
+      sslmode: require
+      timescaledb: false
