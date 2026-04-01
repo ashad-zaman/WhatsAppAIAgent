@@ -11,11 +11,36 @@ A production-grade SaaS platform for building AI-powered WhatsApp assistants wit
 - **Multi-Agent Orchestration** - LangChain/LangGraph powered AI agents that collaborate on complex tasks
 - **Graph RAG** - Combine vector embeddings with knowledge graphs for accurate, contextual AI responses
 - **WhatsApp Integration** - Full WhatsApp Cloud API integration for sending and receiving messages
-- **Smart Reminders** - AI-powered reminder system with plan-based access control
-- **Calendar Management** - Google/Outlook calendar sync with OAuth
-- **Document Intelligence** - Upload, process, and query documents with RAG
+- **Smart Reminders** - One-time & recurring reminders with plan-based access control
+- **Calendar Management** - Create, manage, and sync calendar events with Google/Outlook OAuth
+- **Call Reminders** - Schedule call reminders with smart notifications
+- **Notes Management** - Create and manage notes with AI-powered search
+- **Document Intelligence** - Upload, process, chunk, and query documents with RAG
 - **Workflow Automation** - Temporal.io orchestration for reliable autonomous workflows
 - **Stripe Billing** - Subscription management with Free/Pro/Enterprise plans
+
+### Reminder Features
+
+- **One-time Reminders** - Schedule single reminders for any date/time
+- **Repeated Reminders** - Daily, weekly, monthly, or custom recurrence patterns
+- **Call Reminders** - Special reminder type for phone call notifications
+- **WhatsApp Notifications** - Receive reminders via WhatsApp message
+
+### Calendar Features
+
+- **Event Creation** - Create events with title, description, location, time
+- **Google Calendar Sync** - OAuth-based two-way sync with Google Calendar
+- **Outlook Calendar Sync** - OAuth-based two-way sync with Outlook
+- **Conflict Detection** - Automatic detection of overlapping events
+- **Event Reminders** - Get notified before scheduled events
+
+### Document Features
+
+- **Document Upload** - Upload PDF, DOC, XLS, images with metadata
+- **Automatic Chunking** - Intelligent text chunking for RAG processing
+- **Vector Embedding** - Generate embeddings for semantic search
+- **AI Query** - Ask questions about your documents using AI
+- **Knowledge Graph** - Link documents with Neo4j for relationship search
 
 ## 🏗️ Architecture
 
