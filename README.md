@@ -17,6 +17,57 @@ A production-grade SaaS platform for building AI-powered WhatsApp assistants wit
 - **Workflow Automation** - Temporal.io orchestration for reliable autonomous workflows
 - **Stripe Billing** - Subscription management with Free/Pro/Enterprise plans
 
+## 🏗️ Architecture
+
+This platform follows a **microservices architecture** with event-driven communication:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        API Gateway (Express.js)                 │
+│              Rate Limiting | JWT Auth | Request Routing        │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        │                      │                      │
+        ▼                      ▼                      ▼
+┌───────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Auth Service │    │  Agent Service  │    │  RAG Service    │
+│   (Express)   │    │  (LangGraph)    │    │  (LlamaIndex)   │
+└───────────────┘    └─────────────────┘    └─────────────────┘
+        │                      │                      │
+        └──────────────────────┼──────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        │                      │                      │
+        ▼                      ▼                      ▼
+┌───────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Billing       │    │  Workflow       │    │  Messaging     │
+│ (Stripe)      │    │  (Temporal.io)  │    │  (WhatsApp API) │
+└───────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Core Architecture Components
+
+| Component              | Technology     | Description                                                                                 |
+| ---------------------- | -------------- | ------------------------------------------------------------------------------------------- |
+| **API Gateway**        | Express.js     | Central entry point with rate limiting, JWT auth, request routing                           |
+| **Multi-Agent System** | LangGraph      | Orchestration for specialized AI agents (Router, Chat, Reminder, Calendar, Document, Voice) |
+| **Graph RAG**          | Qdrant + Neo4j | Hybrid vector search + knowledge graph for accurate AI responses                            |
+| **Workflow Engine**    | Temporal.io    | Reliable long-running autonomous processes with retry logic                                 |
+| **Event Bus**          | Kafka          | Inter-service messaging and event sourcing                                                  |
+| **Dashboard**          | Next.js 14     | App Router with role-based UI (Admin + User)                                                |
+
+### AI Agent Types
+
+| Agent              | Responsibilities                       | Tools              |
+| ------------------ | -------------------------------------- | ------------------ |
+| **Router Agent**   | Intent classification, task routing    | GPT-4, Embeddings  |
+| **Chat Agent**     | Conversational AI, Q&A                 | GPT-4, RAG         |
+| **Reminder Agent** | Create/manage reminders, notifications | Calendar, WhatsApp |
+| **Calendar Agent** | Event scheduling, conflict detection   | Google/Outlook API |
+| **Document Agent** | Document processing, summarization     | RAG, Embeddings    |
+| **Voice Agent**    | Speech-to-text, voice commands         | Whisper API        |
+
 ## 📚 Documentation
 
 - **[Main Documentation](docs/html/index.html)** - Comprehensive platform documentation
@@ -94,22 +145,28 @@ pnpm dev
 ```
 whatsappagent/
 ├── apps/
-│   ├── dashboard/        # Next.js dashboard app
+│   ├── dashboard/        # Next.js dashboard app (Admin + User)
 │   └── landing/          # Marketing landing page
 ├── packages/
 │   ├── ai/               # AI/LangChain integration
-│   ├── database/        # Prisma & database utilities
+│   ├── database/        # Prisma, MongoDB, Redis utilities
 │   ├── security/        # RBAC, encryption, rate limiting
 │   └── whatsapp/        # WhatsApp Cloud API client
-├── services/            # Microservices (Express.js)
+├── services/             # Microservices (Express.js)
+│   ├── api-gateway/     # Central gateway with Swagger
 │   ├── agent/           # Multi-agent orchestration
-│   ├── api-gateway/     # API gateway with Swagger
-│   ├── rag/             # RAG service
-│   └── workflow/        # Temporal.io workflows
+│   ├── rag/             # Graph RAG service
+│   ├── workflow/        # Temporal.io workflows
+│   ├── auth/            # Authentication service
+│   ├── billing/         # Stripe integration
+│   ├── calendar/        # Calendar sync service
+│   └── messaging/       # WhatsApp messaging
 ├── docs/
 │   ├── html/            # Main documentation
 │   └── api/             # API reference (Swagger UI)
-├── infrastructure/       # Kubernetes & monitoring configs
+├── infrastructure/
+│   ├── k8s/             # Kubernetes manifests
+│   └── monitoring/      # Prometheus, Grafana configs
 └── tests/               # Unit & integration tests
 ```
 
@@ -126,6 +183,27 @@ pnpm test --coverage
 pnpm vitest run tests/unit/api/auth.test.ts
 ```
 
+## 🔐 Security Features
+
+- **RBAC** - Role-based access control (Admin, User)
+- **JWT Authentication** - Secure token-based auth
+- **Rate Limiting** - Per-user API rate limits
+- **Encryption** - AES-256 at rest, TLS 1.3 in transit
+- **GDPR Compliant** - Data export, deletion, consent management
+
+## 📦 Deployment
+
+The platform is **Kubernetes-ready** with:
+
+- Auto-scaling configurations
+- Health checks & readiness probes
+- Service mesh (Istio) configuration
+- Prometheus metrics & Grafana dashboards
+- Log aggregation with Loki
+- Distributed tracing with Jaeger
+
+See [Deployment Guide](docs/DEPLOYMENT_RUNBOOK.md) for production setup.
+
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
@@ -135,4 +213,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 - [LangChain](https://langchain.dev/) - AI framework
 - [Temporal.io](https://temporal.io/) - Workflow orchestration
 - [Qdrant](https://qdrant.tech/) - Vector database
+- [Neo4j](https://neo4j.com/) - Graph database
 - [WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp) - Messaging platform
+- [Next.js](https://nextjs.org/) - React framework
