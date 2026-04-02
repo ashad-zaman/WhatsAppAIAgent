@@ -269,19 +269,47 @@ export default function HomePage() {
       <section className="video-section">
         <div className="video-container">
           <div className="video-thumbnail-wrapper">
-            <div className="video-thumbnail-inner">
-              <Image
-                src="https://dfc3matr71m6w.cloudfront.net/Mysa/webpAssets/outside_video.webp"
-                alt="Video Thumbnail"
-                fill
-                style={{ objectFit: "cover", borderRadius: "16px" }}
+            <video
+              className="video-thumbnail-inner"
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{ width: "100%", borderRadius: "16px" }}
+              onError={(e) => {
+                const video = e.currentTarget;
+                video.style.display = "none";
+                const fallback = document.getElementById("video-fallback");
+                if (fallback) fallback.style.display = "block";
+              }}
+            >
+              <source src="/Phone_image_main_page.mp4" type="video/mp4" />
+              <source
+                src="https://dfc3matr71m6w.cloudfront.net/Mysa/webpAssets/Phone_image_main_page.mp4"
+                type="video/mp4"
               />
-              <div className="video-play-button">
-                <div className="play-icon">
-                  <svg className="w-10 h-10" fill="white" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
+            </video>
+            <div
+              id="video-fallback"
+              style={{
+                display: "none",
+                width: "100%",
+                height: "300px",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                borderRadius: "16px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                  color: "white",
+                  fontSize: "18px",
+                }}
+              >
+                🎥 Video Preview
               </div>
             </div>
           </div>

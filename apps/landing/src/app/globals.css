@@ -381,9 +381,10 @@ body {
 }
 
 .video-thumbnail-inner {
-  position: relative;
   width: 100%;
-  padding-bottom: 56.25%;
+  max-height: 500px;
+  object-fit: cover;
+  display: block;
 }
 
 .video-play-button {
