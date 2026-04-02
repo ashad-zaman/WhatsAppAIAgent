@@ -1,0 +1,10 @@
+{
+  "name": "@whatsapp-ai/docker-base",
+  "version": "1.0.0",
+  "description": "Shared Docker base images for WhatsApp AI platform",
+  "private": true,
+  "scripts": {
+    "build": "docker build -t whatsapp-ai-node-base:20-alpine ./node-base",
+    "push": "docker push whatsapp-ai-node-base:20-alpine"
+  }
+}

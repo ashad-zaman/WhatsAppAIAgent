@@ -1,0 +1,259 @@
+groups:
+  - name: whatsappai_api
+    interval: 30s
+    rules:
+      - alert: HighHTTPErrorRate
+        expr: |
+          sum(rate(whatsappai_http_requests_total{status_code=~"5.."}[5m])) 
+          / sum(rate(whatsappai_http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High HTTP error rate"
+          description: "HTTP 5xx errors are above 5% for more than 5 minutes"
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(whatsappai_http_request_duration_seconds_bucket[5m])) by (le, path)) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency"
+          description: "95th percentile latency is above 2 seconds"
+
+      - alert: HighRequestRate
+        expr: |
+          sum(rate(whatsappai_http_requests_total[5m])) by (service) > 1000
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "High request rate"
+          description: "Request rate is unusually high"
+
+  - name: whatsappai_agents
+    interval: 30s
+    rules:
+      - alert: AgentFailureRate
+        expr: |
+          sum(rate(whatsappai_agent_requests_total{status="error"}[5m])) 
+          / sum(rate(whatsappai_agent_requests_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High agent failure rate"
+          description: "Agent error rate is above 10%"
+
+      - alert: AgentHighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(whatsappai_agent_response_duration_seconds_bucket[5m])) by (le, agent_type)) > 30
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Agent response latency is high"
+          description: "Agent {{ $labels.agent_type }} 95th percentile latency is above 30 seconds"
+
+  - name: whatsappai_rag
+    interval: 30s
+    rules:
+      - alert: RagHighFailureRate
+        expr: |
+          sum(rate(whatsappai_rag_queries_total{status="error"}[5m])) 
+          / sum(rate(whatsappai_rag_queries_total[5m])) > 0.15
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High RAG query failure rate"
+          description: "RAG query error rate is above 15%"
+
+      - alert: RagHighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(whatsappai_rag_query_duration_seconds_bucket[5m])) by (le)) > 60
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RAG query latency is high"
+          description: "RAG query 95th percentile latency is above 60 seconds"
+
+  - name: whatsappai_whatsapp
+    interval: 30s
+    rules:
+      - alert: WhatsAppMessageDeliveryFailure
+        expr: |
+          sum(rate(whatsappai_whatsapp_messages_sent_total{status="error"}[5m])) 
+          / sum(rate(whatsappai_whatsapp_messages_sent_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "WhatsApp message delivery failures"
+          description: "More than 5% of WhatsApp messages failed to send"
+
+  - name: whatsappai_reminders
+    interval: 30s
+    rules:
+      - alert: ReminderTriggerFailure
+        expr: |
+          sum(rate(whatsappai_reminder_triggers_total{status="error"}[5m])) 
+          / sum(rate(whatsappai_reminder_triggers_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Reminder trigger failures"
+          description: "More than 5% of reminders failed to trigger"
+
+  - name: whatsappai_infrastructure
+    interval: 30s
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service is down"
+          description: "{{ $labels.job }} is down"
+
+      - alert: HighMemoryUsage
+        expr: |
+          (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) 
+          / node_memory_MemTotal_bytes > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90%"
+
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 90%"
+
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk space is low"
+          description: "Disk space is below 10%"
+
+  - name: whatsappai_database
+    interval: 30s
+    rules:
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL instance is not responding"
+
+      - alert: PostgresHighConnections
+        expr: |
+          pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL connections high"
+          description: "PostgreSQL connections are above 80% of max"
+
+      - alert: PostgresSlowQueries
+        expr: |
+          rate(pg_stat_statements_mean_exec_time[5m]) > 1000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow database queries"
+          description: "Average query execution time is above 1 second"
+
+  - name: whatsappai_cache
+    interval: 30s
+    rules:
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance is not responding"
+
+      - alert: LowCacheHitRate
+        expr: |
+          sum(rate(whatsappai_cache_hits_total[5m])) 
+          / (sum(rate(whatsappai_cache_hits_total[5m])) + sum(rate(whatsappai_cache_misses_total[5m]))) < 0.5
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is below 50%"
+
+  - name: whatsappai_queue
+    interval: 30s
+    rules:
+      - alert: QueueBacklog
+        expr: whatsappai_queue_size > 10000
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Queue backlog growing"
+          description: "Queue {{ $labels.queue_name }} has over 10,000 pending jobs"
+
+      - alert: QueueProcessingSlow
+        expr: |
+          histogram_quantile(0.95, sum(rate(whatsappai_queue_processing_duration_seconds_bucket[5m])) by (le, queue_name)) > 30
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Queue processing is slow"
+          description: "Queue {{ $labels.queue_name }} 95th percentile processing time is above 30 seconds"
+
+  - name: whatsappai_errors
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(whatsappai_errors_total[5m])) by (service, error_type) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate"
+          description: "{{ $labels.service }} is experiencing high error rate for {{ $labels.error_type }}"
+
+  - name: whatsappai_slo
+    interval: 1m
+    rules:
+      - alert: SLOErrorBudgetBurn
+        expr: |
+          (
+            sum(rate(whatsappai_http_requests_total{status_code=~"5.."}[1h])) 
+            / sum(rate(whatsappai_http_requests_total[1h]))
+          ) > 0.01
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SLO error budget burning"
+          description: "Error budget is being consumed at a high rate"

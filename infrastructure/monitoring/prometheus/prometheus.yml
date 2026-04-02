@@ -1,0 +1,84 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'whatsapp-agent-prod'
+    environment: 'production'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+rule_files:
+  - '/etc/prometheus/rules/*.yml'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'agent-service'
+    static_configs:
+      - targets: ['agent-service:4000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'rag-service'
+    static_configs:
+      - targets: ['rag-service:4001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'messaging-service'
+    static_configs:
+      - targets: ['messaging-service:4002']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'workflow-service'
+    static_configs:
+      - targets: ['workflow-service:4003']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  - job_name: 'kafka-exporter'
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+
+  - job_name: 'qdrant'
+    static_configs:
+      - targets: ['qdrant:6333']
+    metrics_path: '/metrics'
+
+  - job_name: 'temporal'
+    static_configs:
+      - targets: ['temporal:9090']
+    metrics_path: '/metrics'
+
+remote_write:
+  - url: http://loki:3100/loki/api/v1/push
+    queue_config:
+      capacity: 10000
+      max_shards: 5
+      min_shards: 1
+      max_samples_per_send: 500

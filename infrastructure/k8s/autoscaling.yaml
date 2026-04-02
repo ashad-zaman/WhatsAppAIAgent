@@ -1,0 +1,527 @@
+# Kubernetes Autoscaling Configuration
+# Supports HPA v2, VPA, and Cluster Autoscaler
+
+---
+# Horizontal Pod Autoscaler - API Gateway
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-gateway-hpa
+  namespace: whatsapp-ai
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-gateway
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max
+
+---
+# Horizontal Pod Autoscaler - Agent Service (AI-intensive)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: agent-service-hpa
+  namespace: whatsapp-ai
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: agent-service
+  minReplicas: 5
+  maxReplicas: 30
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
+    - type: Pods
+      pods:
+        metric:
+          name: ai_request_queue_depth
+        target:
+          type: AverageValue
+          averageValue: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 30
+        - type: Pods
+          value: 5
+          periodSeconds: 30
+
+---
+# Horizontal Pod Autoscaler - RAG Service (Memory-intensive)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rag-service-hpa
+  namespace: whatsapp-ai
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rag-service
+  minReplicas: 3
+  maxReplicas: 15
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 85
+    - type: External
+      external:
+        metric:
+          name: qdrant_search_latency_p99
+          selector:
+            matchLabels:
+              service: qdrant
+        target:
+          type: AverageValue
+          averageValue: "500m"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 300
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Pods
+          value: 3
+          periodSeconds: 60
+
+---
+# Horizontal Pod Autoscaler - Messaging Service
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: messaging-service-hpa
+  namespace: whatsapp-ai
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: messaging-service
+  minReplicas: 5
+  maxReplicas: 50
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Pods
+      pods:
+        metric:
+          name: message_processing_queue
+        target:
+          type: AverageValue
+          averageValue: "50"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 25
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 10
+          periodSeconds: 15
+
+---
+# Horizontal Pod Autoscaler - Workflow Orchestrator
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: workflow-orchestrator-hpa
+  namespace: whatsapp-ai
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: workflow-orchestrator
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Pods
+      pods:
+        metric:
+          name: temporal_workflow_queue_depth
+        target:
+          type: AverageValue
+          averageValue: "25"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 300
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 30
+
+---
+# Horizontal Pod Autoscaler - Dashboard (Next.js)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dashboard-hpa
+  namespace: whatsapp-ai
+  labels:
+    app.kubernetes.io/name: whatsapp-ai-platform
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dashboard
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 3
+          periodSeconds: 15
+
+---
+# Pod Disruption Budget - API Gateway
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api-gateway-pdb
+  namespace: whatsapp-ai
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+
+---
+# Pod Disruption Budget - Agent Service
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: agent-service-pdb
+  namespace: whatsapp-ai
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      app: agent-service
+
+---
+# Pod Disruption Budget - Messaging Service
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: messaging-service-pdb
+  namespace: whatsapp-ai
+spec:
+  minAvailable: 4
+  selector:
+    matchLabels:
+      app: messaging-service
+
+---
+# Cluster Autoscaler Configuration (Cloud-specific)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-autoscaler-config
+  namespace: whatsapp-ai
+data:
+  config.yaml: |
+    cloudProvider: aws
+    awsRegion: us-east-1
+    autoDiscovery:
+      clusterName: whatsapp-ai-cluster
+    scale-down-delay-after-add: 10m
+    scale-down-unneeded-time: 10m
+    scale-down-utilization-threshold: 0.5
+    skip-nodes-with-local-storage: true
+    skip-nodes-with-system-pods: false
+    node-template:
+      labels:
+        dedicated: ai-workload
+    scale-up-utilization-threshold: 0.65
+    scale-down-gpu-utilization-threshold: 0.5
+
+---
+# Vertical Pod Autoscaler - RAG Service (Memory optimization)
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: rag-service-vpa
+  namespace: whatsapp-ai
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rag-service
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: rag-service
+        minAllowed:
+          memory: 1Gi
+          cpu: 500m
+        maxAllowed:
+          memory: 4Gi
+          cpu: 4000m
+        controlledResources: ["cpu", "memory"]
+
+---
+# Vertical Pod Autoscaler - Agent Service
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: agent-service-vpa
+  namespace: whatsapp-ai
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: agent-service
+  updatePolicy:
+    updateMode: "Recreate"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: agent-service
+        minAllowed:
+          memory: 512Mi
+          cpu: 250m
+        maxAllowed:
+          memory: 2Gi
+          cpu: 2000m
+        controlledResources: ["cpu", "memory"]
+
+---
+# KEDA ScaledObject - Kafka-based Autoscaling
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: messaging-service-keda
+  namespace: whatsapp-ai
+spec:
+  scaleTargetRef:
+    name: messaging-service
+  pollingInterval: 5
+  cooldownPeriod: 30
+  minReplicaCount: 5
+  maxReplicaCount: 50
+  fallback:
+    failureThreshold: 3
+    replicas: 5
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka.whatsapp-ai.svc:9092
+        consumerGroup: messaging-service-consumer
+        topic: whatsapp-messages
+        lagThreshold: "100"
+    - type: prometheus
+      metadata:
+        serverAddress: http://prometheus.monitoring.svc:9090
+        metricName: http_requests_total
+        threshold: "1000"
+        query: sum(rate(http_requests_total{service="messaging"}[2m]))
+
+---
+# KEDA ScaledObject - Agent Service
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: agent-service-keda
+  namespace: whatsapp-ai
+spec:
+  scaleTargetRef:
+    name: agent-service
+  pollingInterval: 5
+  cooldownPeriod: 30
+  minReplicaCount: 5
+  maxReplicaCount: 30
+  fallback:
+    failureThreshold: 3
+    replicas: 5
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://prometheus.monitoring.svc:9090
+        metricName: ai_request_queue_depth
+        threshold: "50"
+        query: sum(agent_request_queue_depth)
+    - type: cron
+      metadata:
+        timezone: UTC
+        start: 0 8 * * 1-5
+        end: 0 20 * * 1-5
+        desiredReplicas: "15"
+
+---
+# Node Pool Configuration (for cluster autoscaler)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-pool-config
+  namespace: whatsapp-ai
+data:
+  pools.yaml: |
+    nodePools:
+      - name: general
+        minSize: 3
+        maxSize: 20
+        instanceType: m5.large
+        labels:
+          workload-type: general
+        taints: []
+
+      - name: ai-compute
+        minSize: 2
+        maxSize: 10
+        instanceType: m5.xlarge
+        labels:
+          workload-type: ai-compute
+          node.kubernetes.io/large-ai-workload: "true"
+        taints:
+          - key: "ai-workload"
+            value: "true"
+            effect: "NoSchedule"
+
+      - name: memory-optimized
+        minSize: 2
+        maxSize: 8
+        instanceType: r5.xlarge
+        labels:
+          workload-type: memory-intensive
+        taints: []

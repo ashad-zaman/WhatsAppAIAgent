@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "isolatedModules": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@whatsapp-ai/config": ["./packages/config/src"],
+      "@whatsapp-ai/common": ["./packages/common/src"],
+      "@whatsapp-ai/logger": ["./packages/logger/src"],
+      "@whatsapp-ai/database": ["./packages/database/src"],
+      "@whatsapp-ai/events": ["./packages/events/src"],
+      "@whatsapp-ai/queue": ["./packages/queue/src"],
+      "@whatsapp-ai/sentry": ["./packages/sentry/src"],
+      "@whatsapp-ai/whatsapp": ["./packages/whatsapp/src"],
+      "@whatsapp-ai/gdpr": ["./packages/gdpr/src"],
+      "@whatsapp-ai/cdn": ["./packages/cdn/src"],
+      "@whatsapp-ai/monitoring": ["./packages/monitoring/src"],
+      "@whatsapp-ai/ai": ["./packages/ai/src"],
+      "@whatsapp-ai/sdk": ["./packages/sdk/src"],
+      "@whatsapp-ai/security": ["./packages/security/src"]
+    }
+  },
+  "include": ["src/**/*", "tests/**/*", "packages/*/src/**/*"],
+  "exclude": ["node_modules", "dist", "build"]
+}

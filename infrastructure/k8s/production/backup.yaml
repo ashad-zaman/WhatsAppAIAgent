@@ -1,0 +1,392 @@
+# Kubernetes Backup and Restore Configuration
+
+---
+# CronJob - PostgreSQL Backup
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: whatsapp-ai-data
+  labels:
+    app: postgresql
+    component: backup
+spec:
+  schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: postgresql
+            component: backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:15-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  TIMESTAMP=$(date +%Y%m%d%H%M%S)
+                  S3_BUCKET="${S3_BUCKET_NAME}"
+                  S3_ENDPOINT="${S3_ENDPOINT:-}"
+                  
+                  # Create backup
+                  pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER -d whatsapp_ai -F c -b -v -f /backup/postgres-$TIMESTAMP.dump
+                  
+                  # Encrypt backup
+                  openssl enc -aes-256-cbc -salt -pbkdf2 -in /backup/postgres-$TIMESTAMP.dump -out /backup/postgres-$TIMESTAMP.dump.enc -pass pass:$ENCRYPTION_KEY
+                  
+                  # Upload to S3
+                  if [ -n "$S3_ENDPOINT" ]; then
+                    aws s3 cp /backup/postgres-$TIMESTAMP.dump.enc s3://$S3_BUCKET/postgres/ --endpoint-url $S3_ENDPOINT
+                  else
+                    aws s3 cp /backup/postgres-$TIMESTAMP.dump.enc s3://$S3_BUCKET/postgres/
+                  fi
+                  
+                  # Cleanup local files
+                  rm -f /backup/postgres-$TIMESTAMP.dump /backup/postgres-$TIMESTAMP.dump.enc
+                  
+                  # Delete old backups (keep last 30 days)
+                  if [ -n "$S3_ENDPOINT" ]; then
+                    aws s3 ls s3://$S3_BUCKET/postgres/ --endpoint-url $S3_ENDPOINT | grep -v $(date +%Y%m%d) | awk '{print $4}' | while read key; do
+                      aws s3 rm s3://$S3_BUCKET/postgres/$key --endpoint-url $S3_ENDPOINT
+                    done
+                  else
+                    aws s3 ls s3://$S3_BUCKET/postgres/ | grep -v $(date +%Y%m%d) | awk '{print $4}' | while read key; do
+                      aws s3 rm s3://$S3_BUCKET/postgres/$key
+                    done
+                  fi
+              env:
+                - name: POSTGRES_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secrets
+                      key: host
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secrets
+                      key: username
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secrets
+                      key: password
+                - name: S3_BUCKET_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: backup-config
+                      key: s3_bucket
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: backup-config
+                      key: s3_endpoint
+                - name: ENCRYPTION_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: backup-secrets
+                      key: encryption_key
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+          volumes:
+            - name: backup-storage
+              emptyDir:
+                sizeLimit: 10Gi
+
+---
+# CronJob - MongoDB Backup
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+  namespace: whatsapp-ai-data
+  labels:
+    app: mongodb
+    component: backup
+spec:
+  schedule: "0 3 * * *"
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: mongodb
+            component: backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: mongo:7.0
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  TIMESTAMP=$(date +%Y%m%d%H%M%S)
+                  S3_BUCKET="${S3_BUCKET_NAME}"
+                  
+                  # Create backup
+                  mongodump --host $MONGODB_HOST --port 27017 --username $MONGODB_USER --password $MONGODB_PASSWORD --authenticationDatabase admin --archive=/backup/mongodb-$TIMESTAMP.archive --gzip
+                  
+                  # Upload to S3
+                  aws s3 cp /backup/mongodb-$TIMESTAMP.archive s3://$S3_BUCKET/mongodb/
+                  
+                  # Cleanup
+                  rm -f /backup/mongodb-$TIMESTAMP.archive
+                  
+                  # Delete old backups
+                  aws s3 ls s3://$S3_BUCKET/mongodb/ | grep -v $(date +%Y%m%d) | awk '{print $4}' | while read key; do
+                    aws s3 rm s3://$S3_BUCKET/mongodb/$key
+                  done
+              env:
+                - name: MONGODB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: mongodb-secrets
+                      key: host
+                - name: MONGODB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: mongodb-secrets
+                      key: username
+                - name: MONGODB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: mongodb-secrets
+                      key: password
+                - name: S3_BUCKET_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: backup-config
+                      key: s3_bucket
+              resources:
+                requests:
+                  memory: "512Mi"
+                  cpu: "250m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1000m"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+          volumes:
+            - name: backup-storage
+              emptyDir:
+                sizeLimit: 20Gi
+
+---
+# CronJob - Redis Backup
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: whatsapp-ai-data
+  labels:
+    app: redis
+    component: backup
+spec:
+  schedule: "0 4 * * *"
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: redis
+            component: backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: redis:7-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  TIMESTAMP=$(date +%Y%m%d%H%M%S)
+                  S3_BUCKET="${S3_BUCKET_NAME}"
+                  
+                  # Create backup using BGSAVE
+                  redis-cli -h $REDIS_HOST -p 6379 -a $REDIS_PASSWORD BGSAVE
+                  
+                  # Wait for save to complete
+                  while [ $(redis-cli -h $REDIS_HOST -p 6379 -a $REDIS_PASSWORD LASTSAVE) == $(redis-cli -h $REDIS_HOST -p 6379 -a $REDIS_PASSWORD LASTSAVE) ]; do
+                    sleep 1
+                  done
+                  
+                  # Copy dump file
+                  cp /data/dump.rdb /backup/redis-$TIMESTAMP.rdb
+                  
+                  # Upload to S3
+                  aws s3 cp /backup/redis-$TIMESTAMP.rdb s3://$S3_BUCKET/redis/
+                  
+                  # Cleanup
+                  rm -f /backup/redis-$TIMESTAMP.rdb
+                  
+                  # Delete old backups (keep last 7 days)
+                  aws s3 ls s3://$S3_BUCKET/redis/ | grep -v $(date +%Y%m%d) | grep -v $(date -d "1 day ago" +%Y%m%d) | grep -v $(date -d "2 days ago" +%Y%m%d) | grep -v $(date -d "3 days ago" +%Y%m%d) | grep -v $(date -d "4 days ago" +%Y%m%d) | grep -v $(date -d "5 days ago" +%Y%m%d) | grep -v $(date -d "6 days ago" +%Y%m%d) | awk '{print $4}' | while read key; do
+                    aws s3 rm s3://$S3_BUCKET/redis/$key
+                  done
+              env:
+                - name: REDIS_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: redis-secrets
+                      key: host
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: redis-secrets
+                      key: password
+                - name: S3_BUCKET_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: backup-config
+                      key: s3_bucket
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "50m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "250m"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+                - name: redis-storage
+                  mountPath: /data
+                  readOnly: true
+          volumes:
+            - name: backup-storage
+              emptyDir:
+                sizeLimit: 5Gi
+            - name: redis-storage
+              persistentVolumeClaim:
+                claimName: redis-data
+
+---
+# Job - Database Restore
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-restore
+  namespace: whatsapp-ai-data
+  labels:
+    app: database
+    component: restore
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: database
+        component: restore
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: restore
+          image: postgres:15-alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting database restore..."
+              echo "Warning: This will overwrite existing data!"
+              read -p "Type 'yes' to confirm: " confirm
+              if [ "$confirm" != "yes" ]; then
+                echo "Restore cancelled"
+                exit 1
+              fi
+              
+              TIMESTAMP=$BACKUP_TIMESTAMP
+              S3_BUCKET="${S3_BUCKET_NAME}"
+              
+              # Download backup
+              aws s3 cp s3://$S3_BUCKET/postgres/postgres-$TIMESTAMP.dump.enc /tmp/postgres-restore.dump.enc
+              
+              # Decrypt backup
+              openssl enc -d -aes-256-cbc -pbkdf2 -in /tmp/postgres-restore.dump.enc -out /tmp/postgres-restore.dump -pass pass:$ENCRYPTION_KEY
+              
+              # Drop existing connections
+              psql -h $POSTGRES_HOST -U $POSTGRES_USER -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'whatsapp_ai' AND pid <> pg_backend_pid();"
+              
+              # Drop and recreate database
+              psql -h $POSTGRES_HOST -U $POSTGRES_USER -d postgres -c "DROP DATABASE IF EXISTS whatsapp_ai;"
+              psql -h $POSTGRES_HOST -U $POSTGRES_USER -d postgres -c "CREATE DATABASE whatsapp_ai;"
+              
+              # Restore backup
+              pg_restore -h $POSTGRES_HOST -U $POSTGRES_USER -d whatsapp_ai -v /tmp/postgres-restore.dump
+              
+              # Cleanup
+              rm -f /tmp/postgres-restore.dump /tmp/postgres-restore.dump.enc
+              
+              echo "Database restore completed successfully"
+          env:
+            - name: BACKUP_TIMESTAMP
+              value: ""
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: host
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: password
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: backup-config
+                  key: s3_bucket
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup-secrets
+                  key: encryption_key
+
+---
+# ConfigMap - Backup configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-config
+  namespace: whatsapp-ai-data
+data:
+  s3_bucket: "whatsapp-ai-backups"
+  s3_endpoint: ""
+  retention_days: "30"
+
+---
+# Secret - Backup secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backup-secrets
+  namespace: whatsapp-ai-data
+type: Opaque
+stringData:
+  encryption_key: "CHANGE_THIS_TO_A_SECURE_KEY"

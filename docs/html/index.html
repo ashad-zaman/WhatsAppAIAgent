@@ -1,0 +1,3446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp AI Platform - Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        code, pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--gray-900);
+        }
+
+        .sidebar-logo svg {
+            width: 32px;
+            height: 32px;
+            color: var(--primary);
+        }
+
+        .sidebar-logo span {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            padding: 0.5rem 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+            margin: 0.125rem 0;
+            transition: all 0.15s;
+        }
+
+        .nav-link:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .breadcrumb a {
+            color: var(--gray-500);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-100);
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 2rem 0 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        h2:first-of-type {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin: 1rem 0 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-600);
+        }
+
+        ul, ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--gray-600);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .feature-icon.blue { background: #dbeafe; color: var(--primary); }
+        .feature-icon.purple { background: #ede9fe; color: var(--secondary); }
+        .feature-icon.green { background: #d1fae5; color: var(--success); }
+        .feature-icon.orange { background: #fef3c7; color: var(--warning); }
+
+        .feature-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: var(--gray-900);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            color: #e5e7eb;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .string { color: #a5f3fc; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .variable { color: #fbbf24; }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--gray-200);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-600);
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+
+        /* Architecture Diagram */
+        .diagram {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .diagram pre {
+            font-size: 0.65rem;
+            line-height: 1.3;
+            color: var(--gray-700);
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+        }
+
+        .checklist li::before {
+            content: '✓';
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 9999px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            margin: 0.25rem;
+        }
+
+        /* Section divider */
+        hr {
+            border: none;
+            border-top: 1px solid var(--gray-200);
+            margin: 3rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* Screenshot Placeholders */
+        .screenshot-placeholder {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border: 2px dashed var(--gray-300);
+            border-radius: 0.75rem;
+            padding: 3rem 2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .screenshot-mockup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .screenshot-icon {
+            font-size: 3rem;
+            opacity: 0.7;
+        }
+
+        .screenshot-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 1.125rem;
+        }
+
+        .screenshots-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .screenshots-gallery img {
+            width: 100%;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+        }
+
+        .screenshots-gallery h4 {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        /* Code comments in blocks */
+        .comment {
+            color: #6a9955;
+        }
+
+        /* Responsive Design Section */
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .responsive-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .responsive-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .responsive-card p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .device-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .device-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--gray-100);
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="#overview" class="sidebar-logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                <span>WhatsApp AI</span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Getting Started</div>
+                <a href="#overview" class="nav-link active">Overview</a>
+                <a href="#architecture" class="nav-link">Architecture</a>
+                <a href="#quickstart" class="nav-link">Quick Start</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Core Services</div>
+                <a href="#services" class="nav-link">All Services</a>
+                <a href="#api-gateway" class="nav-link">API Gateway</a>
+                <a href="#agent-service" class="nav-link">Agent Service</a>
+                <a href="#rag-service" class="nav-link">RAG Service</a>
+                <a href="#messaging-service" class="nav-link">Messaging</a>
+                <a href="#workflow-service" class="nav-link">Workflow</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">AI & Agents</div>
+                <a href="#multi-agent" class="nav-link">Multi-Agent System</a>
+                <a href="#langgraph" class="nav-link">LangGraph</a>
+                <a href="#rag" class="nav-link">Graph RAG</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Infrastructure</div>
+                <a href="#database" class="nav-link">Databases</a>
+                <a href="#kubernetes" class="nav-link">Kubernetes</a>
+                <a href="#monitoring" class="nav-link">Monitoring</a>
+                <a href="#deployment" class="nav-link">Deployment</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Frontend</div>
+                <a href="#frontend-ui" class="nav-link">Dashboard UI</a>
+                <a href="#responsive-design" class="nav-link">Responsive Design</a>
+                <a href="#screenshot-landing" class="nav-link">Screenshots</a>
+                <a href="#admin-dashboard" class="nav-link">Admin Dashboard</a>
+                <a href="#user-dashboard" class="nav-link">User Dashboard</a>
+                <a href="#landing-page" class="nav-link">Landing Page</a>
+                <a href="#legal-pages" class="nav-link">Legal Pages</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Security & Compliance</div>
+                <a href="#security" class="nav-link">Security</a>
+                <a href="#gdpr" class="nav-link">GDPR</a>
+                <a href="#privacy" class="nav-link">Privacy</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Reference</div>
+                <a href="#scripts" class="nav-link">Scripts</a>
+                <a href="#testing" class="nav-link">Testing</a>
+                <a href="#api-reference" class="nav-link">API Reference</a>
+                <a href="#configuration" class="nav-link">Configuration</a>
+                <a href="#roadmap" class="nav-link">Roadmap</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="topbar">
+            <div class="breadcrumb">
+                <a href="#">Docs</a>
+                <span>/</span>
+                <span id="current-page">Overview</span>
+            </div>
+            <div class="topbar-actions">
+                <a href="https://github.com/whatsapp-ai/platform" class="btn btn-outline" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+                <a href="#quickstart" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Overview Section -->
+            <section id="overview">
+                <h1>WhatsApp AI Platform</h1>
+                <p style="font-size: 1.25rem; color: var(--gray-500); max-width: 800px;">
+                    A production-grade SaaS platform for building AI-powered WhatsApp assistants with multi-agent orchestration, Graph RAG, and autonomous workflow management.
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">15+</div>
+                        <div class="stat-label">Services</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Databases</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">100%</div>
+                        <div class="stat-label">Complete</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">372</div>
+                        <div class="stat-label">Tests Passing</div>
+                    </div>
+                </div>
+
+                <h2>Key Features</h2>
+                <div class="card-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Multi-Agent Orchestration</div>
+                        <div class="feature-desc">Intelligent routing with LangGraph for specialized AI agents that collaborate on complex tasks.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Graph RAG</div>
+                        <div class="feature-desc">Combine vector embeddings with knowledge graphs for more accurate, contextual AI responses.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Temporal Workflows</div>
+                        <div class="feature-desc">Autonomous task orchestration with Temporal.io for reliable, long-running workflows.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Enterprise Security</div>
+                        <div class="feature-desc">End-to-end encryption, RBAC, audit logging, and GDPR compliance built-in.</div>
+                    </div>
+                </div>
+
+                <h2>WhatsApp User Experience</h2>
+                <p style="color: var(--gray-500); margin-bottom: 1.5rem;">
+                    Users interact with the AI assistant directly through WhatsApp. Here's how it works:
+                </p>
+                
+                <div class="card-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Natural Language Commands</div>
+                        <div class="feature-desc">Users simply send messages like "Remind me to call mom at 5pm" or "Schedule meeting tomorrow at 2pm" and the AI understands and executes.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Proactive Reminders</div>
+                        <div class="feature-desc">The AI sends WhatsApp notifications at scheduled times. Supports one-time, daily, weekly, and monthly recurring reminders.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Calendar Integration</div>
+                        <div class="feature-desc">Users can say "Schedule team meeting Friday at 3pm" and the AI creates calendar events. Syncs with Google Calendar and Outlook.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Document Q&A</div>
+                        <div class="feature-desc">Upload documents via dashboard, then ask questions in WhatsApp like "What does the contract say about payment terms?"</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon teal">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Smart Suggestions</div>
+                        <div class="feature-desc">AI analyzes patterns and suggests reminders proactively. "I noticed you call your doctor every Monday. Want me to set a weekly reminder?"</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon pink">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Shared Reminders</div>
+                        <div class="feature-desc">Share reminders with family or team members. "Remind John about the presentation" sends notification to both users.</div>
+                    </div>
+                </div>
+
+                <h3>Example Conversations</h3>
+                <div class="code-block" style="margin: 1rem 0;">
+                    <pre><span class="comment"># User sends message via WhatsApp</span>
+User: "Remind me to water the plants every day at 9am"
+
+<span class="comment"># AI confirms and creates recurring reminder</span>
+AI: ✅ Done! I've set a daily reminder to water the plants at 9:00 AM. 
+    You'll receive a WhatsApp notification every morning.
+
+<span class="comment"># ---</span>
+
+User: "Schedule a meeting with the team tomorrow at 3pm"
+
+<span class="comment"># AI creates calendar event</span>
+AI: 📅 I've scheduled "Team Meeting" for tomorrow (March 15) at 3:00 PM.
+    I've also added it to your Google Calendar.
+
+<span class="comment"># ---</span>
+
+User: "What's in the Q4 report about revenue?"
+
+<span class="comment"># AI queries uploaded documents</span>
+AI: Based on the Q4 report, revenue increased by 23% compared to Q3. 
+    Key points:
+    • Total revenue: $2.4M
+    • Growth: 23% YoY
+    • Strongest performance: Enterprise segment
+
+<span class="comment"># ---</span>
+
+User: "What are my reminders for today?"
+
+<span class="comment"># AI lists upcoming reminders</span>
+AI: 📋 Your reminders for today:
+    1. Morning standup - 9:00 AM
+    2. Call mom - 5:00 PM
+    3. Pay bills - 7:00 PM</pre>
+                </div>
+
+                <h3>WhatsApp Webhook Flow</h3>
+                <div class="diagram" style="margin: 1rem 0;">
+                    <pre>
+┌─────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│   WhatsApp  │────▶│  Webhook API    │────▶│  Message Handler │
+│   Cloud API │     │  /webhooks/ws  │     │  (Parse + Route)│
+└─────────────┘     └─────────────────┘     └────────┬─────────┘
+                                                       │
+                    ┌──────────────────────────────────┴──────────┐
+                    │                   Agent Processing            │
+                    │  ┌──────────┐ ┌──────────┐ ┌──────────┐    │
+                    │  │ Reminder │ │ Calendar │ │ Document │    │
+                    │  │  Agent   │ │  Agent   │ │  Agent   │    │
+                    │  └──────────┘ └──────────┘ └──────────┘    │
+                    │  ┌──────────┐ ┌──────────┐                │
+                    │  │Conversation│ │ RAG      │                │
+                    │  │  Agent   │ │ Service  │                │
+                    │  └──────────┘ └──────────┘                │
+                    └─────────────────────────────────────────────┘
+                                                       │
+                    ┌─────────────────────────────────────────────┘
+                    ▼
+              ┌──────────────┐     ┌─────────────────┐
+              │ WhatsApp API │────▶│  Send Response  │
+              │ (Send Message)│     │  via WhatsApp  │
+              └──────────────┘     └─────────────────┘
+                    │
+                    ▼
+              ┌────────────────────────────────────────────────────┐
+              │            User receives WhatsApp message          │
+              └────────────────────────────────────────────────────┘</pre>
+                </div>
+
+                <h3>Webhook Endpoint</h3>
+                <div class="code-block" style="margin: 1rem 0;">
+                    <pre><span class="comment"># WhatsApp sends POST to your webhook when user sends message</span>
+POST /api/webhooks/whatsapp
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [{
+    "changes": [{
+      "value": {
+        "messages": [{
+          "from": "+1234567890",
+          "id": "wamid.xxx",
+          "timestamp": "1234567890",
+          "text": { "body": "Remind me to call mom" },
+          "type": "text"
+        }]
+      }
+    }]
+  }]
+}</pre>
+                </div>
+
+                <h3>Supported Message Types</h3>
+                <div class="card" style="margin: 1rem 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--gray-200);">
+                                <th style="text-align: left; padding: 0.75rem;">Type</th>
+                                <th style="text-align: left; padding: 0.75rem;">Description</th>
+                                <th style="text-align: left; padding: 0.75rem;">Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem;"><strong>Text</strong></td>
+                                <td style="padding: 0.75rem;">Natural language commands</td>
+                                <td style="padding: 0.75rem;">AI response + action confirmation</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><strong>Image</strong></td>
+                                <td style="padding: 0.75rem;">Photo uploads</td>
+                                <td style="padding: 0.75rem;">Upload to dashboard for analysis</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><strong>Voice</strong></td>
+                                <td style="padding: 0.75rem;">Voice messages (Pro plan)</td>
+                                <td style="padding: 0.75rem;">Whisper transcription + action</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><strong>Document</strong></td>
+                                <td style="padding: 0.75rem;">PDF, DOCX files</td>
+                                <td style="padding: 0.75rem;">Upload to dashboard for indexing</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Technology Stack</h2>
+                <div class="card">
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span class="tag">Node.js 20</span>
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">Express.js</span>
+                        <span class="tag">Next.js 14</span>
+                        <span class="tag">LangChain/LangGraph</span>
+                        <span class="tag">LlamaIndex</span>
+                        <span class="tag">Prisma</span>
+                        <span class="tag">PostgreSQL</span>
+                        <span class="tag">MongoDB</span>
+                        <span class="tag">Redis</span>
+                        <span class="tag">Neo4j</span>
+                        <span class="tag">Qdrant</span>
+                        <span class="tag">Kafka</span>
+                        <span class="tag">Temporal</span>
+                        <span class="tag">Kubernetes</span>
+                        <span class="tag">Prometheus</span>
+                        <span class="tag">Grafana</span>
+                        <span class="tag">Sentry</span>
+                    </div>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Architecture Section -->
+            <section id="architecture">
+                <h1>System Architecture</h1>
+                
+                <h2>High-Level Architecture</h2>
+                <div class="diagram">
+                    <pre>
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                                        CLIENTS                                            │
+│   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐        │
+│   │   WhatsApp   │    │ Web Dashboard│    │  Mobile App  │    │    API       │        │
+│   │  Cloud API   │    │   (Next.js)  │    │(React Native)│    │   Clients    │        │
+│   └──────┬───────┘    └──────┬───────┘    └──────┬───────┘    └──────┬───────┘        │
+└───────────┼───────────────────┼───────────────────┼───────────────────┼─────────────────┘
+            │                   │                   │                   │
+            └───────────────────┴─────────┬─────────┴───────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                              API GATEWAY                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐   │
+│  │  Rate Limiting │ JWT Auth │ Load Balancing │ WebSocket │ SSL │ Compression   │   │
+│  └─────────────────────────────────────────────────────────────────────────────────┘   │
+└───────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │
+                    ┌───────────────────────┼───────────────────────┐
+                    │                       │                       │
+                    ▼                       ▼                       ▼
+┌───────────────────────────┐ ┌───────────────────────────┐ ┌───────────────────────────┐
+│      MESSAGE BUS          │ │      MESSAGE BUS          │ │      MESSAGE BUS          │
+│    (Kafka Topics)         │ │    (Kafka Topics)         │ │    (Kafka Topics)         │
+│  ┌───────────────────┐   │ │  ┌───────────────────┐   │ │  ┌───────────────────┐   │
+│  │ agent.intent      │   │ │  │ agent.task        │   │ │  │ agent.result      │   │
+│  │ agent.routing     │   │ │  │ agent.execution   │   │ │  │ agent.notification│   │
+│  └───────────────────┘   │ │  └───────────────────┘   │ │  └───────────────────┘   │
+└───────────────────────────┘ └───────────────────────────┘ └───────────────────────────┘
+                    │                       │                       │
+    ┌───────────────┼───────────────┬───────┴───────────────┬───────┴───────────────┐
+    │               │               │                       │                       │
+    ▼               ▼               ▼                       ▼                       ▼
+┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
+│  Auth   │   │  User   │   │  Agent  │   │   RAG    │   │Messaging│   │Workflow │
+│ Service │   │ Service │   │ Service │   │ Service  │   │ Service │   │Service  │
+└─────────┘   └─────────┘   └────┬────┘   └────┬────┘   └─────────┘   └────┬────┘
+                                  │               │                           │
+                    ┌─────────────┴───────────────┴─────────────┐           │
+                    ▼                                               ▼           │
+        ┌───────────────────────┐                   ┌───────────────────────────┐│
+        │   MULTI-AGENT LAYER   │                   │      KNOWLEDGE LAYER      ││
+        │  ┌─────┐ ┌─────┐     │                   │  ┌─────────┐ ┌─────────┐ ││
+        │  │Chat │ │Rmrndr│     │                   │  │ Qdrant  │ │  Neo4j  │ ││
+        │  │Agent│ │Agent │     │                   │  │(Vector) │ │ (Graph) │ ││
+        │  └─────┘ └─────┘     │                   │  └─────────┘ └─────────┘ ││
+        │  ┌─────┐ ┌─────┐     │                   └───────────────────────────┘│
+        │  │Cldr │ │Doc  │     │                                                   │
+        │  │Agent│ │Agent│     │                                                   │
+        │  └─────┘ └─────┘     │                                                   │
+        └───────────────────────┘                                                   │
+                                                                                    │
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│                              DATA LAYER                                           │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐        │
+│  │PostgreSQL│ │ MongoDB │ │  Redis  │ │Temporal │ │  Kafka  │ │ Sentry  │        │
+│  │(Primary) │ │(Messages)│ │(Cache) │ │(Workflow)│ │(Events) │ │(Errors) │        │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘        │
+└───────────────────────────────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│                          INFRASTRUCTURE                                             │
+│        Kubernetes Cluster │ Prometheus + Grafana │ Loki │ Tempo │ Jaeger          │
+└───────────────────────────────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h2>Data Flow</h2>
+                <div class="diagram">
+                    <pre>
+    ┌─────────┐         ┌──────────────┐         ┌─────────────────┐
+    │WhatsApp │────────▶│ Webhook      │────────▶│ API Gateway     │
+    │  User   │         │ Processor    │         │ (Authentication)│
+    └─────────┘         └──────────────┘         └────────┬────────┘
+                                                           │
+                        ┌─────────────────────────────────┼─────────────────┐
+                        │                                 │                 │
+                        ▼                                 ▼                 ▼
+                ┌───────────────┐                 ┌───────────────┐ ┌──────────────┐
+                │ Kafka Queue   │                 │ Rate Limiter  │ │ Auth Service │
+                │ (Durable)     │                 └───────────────┘ └──────────────┘
+                └───────┬───────┘
+                        │
+                        ▼
+                ┌───────────────┐         ┌─────────────────────────────┐
+                │ Agent Service │────────▶│ LangGraph Orchestration     │
+                │ (Consumer)    │         │ ┌─────────┐ ┌─────────┐   │
+                └───────┬───────┘         │ │ Router  │ │Executor │   │
+                        │                 │ │ Agent   │ │ Agent   │   │
+                        │                 │ └─────────┘ └─────────┘   │
+                        │                 └─────────────┬───────────┘
+                        │                               │
+        ┌───────────────┼───────────────┐               │
+        │               │               │               │
+        ▼               ▼               ▼               ▼
+    ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────────────────┐
+    │ Calendar│   │Reminder │   │  Chat   │   │      RAG Service    │
+    │ Agent   │   │ Agent   │   │ Agent   │   │ ┌─────────┐ ┌─────┐ │
+    └────┬────┘   └────┬────┘   └────┬────┘ │ │ Vector  │ │Graph│ │
+         │             │             │      │ │ Search  │ │Search│ │
+         │             │             │      │ └─────────┘ └─────┘ │
+         │             │             │      └─────────────┬───────┘
+         │             │             │                    │
+         └─────────────┼─────────────┘                    │
+                       │                                  │
+                       └──────────────┬───────────────────┘
+                                      │
+                                      ▼
+                            ┌─────────────────┐
+                            │   Response      │
+                            │   Generator     │
+                            └────────┬────────┘
+                                     │
+                                     ▼
+                            ┌─────────────────┐
+                            │  WhatsApp API   │
+                            │  (Send Message) │
+                            └────────┬────────┘
+                                     │
+                                     ▼
+                            ┌─────────────────┐
+                            │    User Gets    │
+                            │    Response     │
+                            └─────────────────┘
+                    </pre>
+                </div>
+
+                <h2>Multi-Agent Collaboration</h2>
+                <div class="diagram">
+                    <pre>
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                           ORCHESTRATION LAYER (LangGraph)                            │
+│  ┌───────────────────────────────────────────────────────────────────────────────┐  │
+│  │                        Supervisor Agent                                         │  │
+│  │  ┌─────────────────────────────────────────────────────────────────────────┐  │  │
+│  │  │                        Message Intent Classification                       │  │  │
+│  │  │   "Schedule a meeting with John tomorrow at 3pm"                         │  │  │
+│  │  └─────────────────────────────────────────────────────────────────────────┘  │  │
+│  │                                    │                                            │  │
+│  │                    ┌───────────────┼───────────────┐                            │  │
+│  │                    │               │               │                            │  │
+│  │                    ▼               ▼               ▼                            │  │
+│  │              ┌──────────┐   ┌──────────┐   ┌──────────┐                      │  │
+│  │              │ Calendar │   │ Reminder │   │   Chat   │                      │  │
+│  │              │  Agent   │   │  Agent   │   │  Agent   │                      │  │
+│  │              │          │   │          │   │          │                      │  │
+│  │              │ • Parse  │   │ • Create │   │ • Generate│                      │  │
+│  │              │ • Check  │   │ • Notify │   │ • Context │                      │  │
+│  │              │ • Reserve│   │ • Followup│  │ • Response│                      │  │
+│  │              └────┬─────┘   └────┬─────┘   └────┬─────┘                      │  │
+│  │                   │             │             │                               │  │
+│  │                   └─────────────┼─────────────┘                               │  │
+│  │                                 ▼                                              │  │
+│  │                    ┌────────────────────────┐                                  │  │
+│  │                    │    Response Synthesizer │                                  │  │
+│  │                    │  "I've scheduled your   │                                  │  │
+│  │                    │   meeting with John...  │                                  │  │
+│  │                    └────────────────────────┘                                  │  │
+│  └───────────────────────────────────────────────────────────────────────────────┘  │
+│                                       │                                              │
+│                                       ▼                                              │
+│  ┌───────────────────────────────────────────────────────────────────────────────┐  │
+│  │                           External Integrations                                 │  │
+│  │   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐        │  │
+│  │   │ Google   │  │ Outlook  │  │ OpenAI   │  │ Stripe   │  │ WhatsApp │        │  │
+│  │   │ Calendar │  │ Calendar │  │ GPT-4    │  │ Payments │  │ Cloud API│        │  │
+│  │   └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘        │  │
+│  └───────────────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Services Section -->
+            <section id="services">
+                <h1>Core Services</h1>
+                
+                <div class="card-grid">
+                    <div class="feature-card" id="api-gateway">
+                        <div class="feature-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">API Gateway</div>
+                        <div class="feature-desc">Main entry point handling authentication, rate limiting, and request routing.</div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-info">Express.js</span>
+                            <span class="badge badge-success">Production Ready</span>
+                        </div>
+                    </div>
+                    <div class="feature-card" id="agent-service">
+                        <div class="feature-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Agent Service</div>
+                        <div class="feature-desc">Multi-agent orchestration with LangGraph for intelligent message handling.</div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-info">LangGraph</span>
+                            <span class="badge badge-success">Production Ready</span>
+                        </div>
+                    </div>
+                    <div class="feature-card" id="rag-service">
+                        <div class="feature-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">RAG Service</div>
+                        <div class="feature-desc">Graph RAG combining vector search with knowledge graphs for accurate AI responses.</div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-info">LlamaIndex</span>
+                            <span class="badge badge-success">Production Ready</span>
+                        </div>
+                    </div>
+                    <div class="feature-card" id="messaging-service">
+                        <div class="feature-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Messaging Service</div>
+                        <div class="feature-desc">WhatsApp Cloud API integration for sending and receiving messages.</div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-info">WhatsApp API</span>
+                            <span class="badge badge-success">Production Ready</span>
+                        </div>
+                    </div>
+                    <div class="feature-card" id="workflow-service">
+                        <div class="feature-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Workflow Service</div>
+                        <div class="feature-desc">Temporal.io orchestration for reliable, long-running autonomous workflows.</div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-info">Temporal</span>
+                            <span class="badge badge-success">Production Ready</span>
+                        </div>
+                    </div>
+                    <div class="feature-card" id="dashboard-service">
+                        <div class="feature-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                                <line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Dashboard</div>
+                        <div class="feature-desc">Next.js admin dashboard for managing agents, conversations, and analytics.</div>
+                        <div style="margin-top: 1rem;">
+                            <span class="badge badge-info">Next.js 14</span>
+                            <span class="badge badge-success">Production Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Multi-Agent Section -->
+            <section id="multi-agent">
+                <h1>Multi-Agent System</h1>
+                <p>Our platform uses <span id="langgraph">LangGraph</span> for sophisticated multi-agent orchestration, enabling specialized AI agents to collaborate on complex tasks.</p>
+
+                <h2>Agent Types</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Responsibilities</th>
+                                <th>Tools</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Router Agent</strong></td>
+                                <td>Intent classification, task routing</td>
+                                <td>GPT-4, Embeddings</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Chat Agent</strong></td>
+                                <td>Conversational AI, Q&A</td>
+                                <td>GPT-4, RAG</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reminder Agent</strong></td>
+                                <td>Schedule reminders, follow-ups</td>
+                                <td>Temporal, Notifications</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Calendar Agent</strong></td>
+                                <td>Schedule management, meeting booking</td>
+                                <td>Google/Outlook API</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Document Agent</strong></td>
+                                <td>Document processing, summarization</td>
+                                <td>RAG, GPT-4</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Voice Agent</strong></td>
+                                <td>Audio transcription, synthesis</td>
+                                <td>Whisper, ElevenLabs</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="rag">Graph RAG Architecture</h2>
+                <div class="diagram">
+                    <pre>
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                              GRAPH RAG PIPELINE                                      │
+│                                                                                     │
+│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐      │
+│   │   Document  │────▶│  Text       │────▶│  Embedding  │────▶│   Vector    │      │
+│   │   Ingestion │     │  Chunker    │     │  Generator  │     │   Store     │      │
+│   └─────────────┘     └─────────────┘     └─────────────┘     │  (Qdrant)   │      │
+│                                                               └───────┬─────┘      │
+│                                                                           │          │
+│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐              │          │
+│   │   Entity   │────▶│  Relation   │────▶│   Graph     │◀─────────────┘          │
+│   │  Extractor │     │   Builder   │     │   Store     │                         │
+│   └─────────────┘     └─────────────┘     │  (Neo4j)    │                         │
+│                                           └──────┬──────┘                         │
+│                                                  │                                 │
+│                                                  ▼                                 │
+│   ┌───────────────────────────────────────────────────────────────────────────┐   │
+│   │                         QUERY ORCHESTRATION                               │   │
+│   │                                                                           │   │
+│   │    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐          │   │
+│   │    │  Query   │───▶│ Vector   │───▶│  Graph   │───▶│  Result  │          │   │
+│   │    │  Router  │    │  Search  │    │   Traverse│   │  Synth.  │          │   │
+│   │    └──────────┘    └──────────┘    └──────────┘    └──────────┘          │   │
+│   │          │                                                        │          │   │
+│   │          │         ┌────────────────────────────────────┐        │          │   │
+│   │          └────────▶│          LLM Synthesizer           │◀───────┘          │   │
+│   │                    │  Combines vector + graph results   │                   │   │
+│   │                    │  for accurate, contextual answers  │                   │   │
+│   │                    └────────────────────────────────────┘                   │   │
+│   └───────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- API Reference Section -->
+            <section id="api-reference">
+                <h1>API Reference</h1>
+                
+                <p>The platform exposes REST APIs through Next.js Route Handlers and Express.js microservices.</p>
+
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div class="card-header">
+                        <div class="card-title">OpenAPI/Swagger Documentation</div>
+                        <span class="badge badge-success">Interactive</span>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1rem;">
+                        Full API specification with request/response examples, schema definitions, and interactive testing.
+                    </p>
+                    <ul style="font-size: 0.875rem;">
+                        <li><strong>Interactive HTML:</strong> <a href="docs/api/index.html" target="_blank">OpenAPI Swagger UI</a></li>
+                        <li><strong>Swagger JSON:</strong> <code>services/api-gateway/src/swagger.json</code></li>
+                        <li><strong>API Gateway:</strong> <code>/api/docs</code> (Swagger UI when running)</li>
+                        <li><strong>OpenAPI Version:</strong> 3.0.3</li>
+                    </ul>
+                    <div style="margin-top: 1rem;">
+                        <span class="badge badge-info">Auth</span>
+                        <span class="badge badge-info">Users</span>
+                        <span class="badge badge-info">Agents</span>
+                        <span class="badge badge-info">Reminders</span>
+                        <span class="badge badge-info">Documents</span>
+                        <span class="badge badge-info">Calendar</span>
+                        <span class="badge badge-info">RAG</span>
+                        <span class="badge badge-info">Billing</span>
+                        <span class="badge badge-info">Webhooks</span>
+                    </div>
+                </div>
+
+                <h2>Quick API Endpoints</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/auth/signup</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Register new user with email verification</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/auth/login</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Authenticate user and return JWT token</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/otp/send</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Send OTP for verification</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/otp/verify</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Verify OTP code</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>User Management API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/user/profile</code></td>
+                                <td><span class="badge badge-info">GET/PUT</span></td>
+                                <td>Get or update user profile</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/user/preferences</code></td>
+                                <td><span class="badge badge-info">GET/PUT</span></td>
+                                <td>Manage user preferences</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/user/password</code></td>
+                                <td><span class="badge badge-warning">PUT</span></td>
+                                <td>Change user password</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/user/2fa</code></td>
+                                <td><span class="badge badge-info">GET/POST/DELETE</span></td>
+                                <td>Manage two-factor authentication</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/user/export</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Export user data (GDPR)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Reminders API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/reminders</code></td>
+                                <td><span class="badge badge-success">GET/POST</span></td>
+                                <td>List or create reminders</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/reminders/[id]</code></td>
+                                <td><span class="badge badge-info">GET/PUT/DELETE</span></td>
+                                <td>Manage individual reminder</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Calendar API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/events</code></td>
+                                <td><span class="badge badge-success">GET/POST</span></td>
+                                <td>List or create calendar events</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/events/[id]</code></td>
+                                <td><span class="badge badge-info">GET/PUT/DELETE</span></td>
+                                <td>Manage individual event</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/calendar/connect</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Connect Google/Outlook calendar</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/calendar/sync</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Sync calendar events</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Documents API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/documents</code></td>
+                                <td><span class="badge badge-success">GET/POST</span></td>
+                                <td>List or upload documents</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/documents/[id]</code></td>
+                                <td><span class="badge badge-info">GET/DELETE</span></td>
+                                <td>Get or delete document</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/documents/upload</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Upload document for RAG processing</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/documents/query</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Query documents using AI (RAG)</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/documents/[id]/download</code></td>
+                                <td><span class="badge badge-success">GET</span></td>
+                                <td>Download document file</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Workflows API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/workflows</code></td>
+                                <td><span class="badge badge-success">GET/POST</span></td>
+                                <td>List or create workflows</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/workflows/[id]</code></td>
+                                <td><span class="badge badge-info">GET/PUT/DELETE</span></td>
+                                <td>Manage individual workflow</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/workflows/[id]/execute</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Execute workflow manually</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Billing API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/billing</code></td>
+                                <td><span class="badge badge-info">GET</span></td>
+                                <td>Get current subscription</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/checkout/create-session</code></td>
+                                <td><span class="badge badge-success">POST</span></td>
+                                <td>Create Stripe checkout session</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/webhooks/stripe</code></td>
+                                <td><span class="badge badge-warning">POST</span></td>
+                                <td>Handle Stripe webhook events</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Admin API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/admin/users</code></td>
+                                <td><span class="badge badge-info">GET/POST</span></td>
+                                <td>List or create users (admin)</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/admin/users/[id]</code></td>
+                                <td><span class="badge badge-info">GET/PUT/DELETE</span></td>
+                                <td>Manage user (admin)</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/admin/agents</code></td>
+                                <td><span class="badge badge-info">GET/POST</span></td>
+                                <td>List or create AI agents (admin)</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/admin/agents/[id]</code></td>
+                                <td><span class="badge badge-info">GET/PUT/DELETE</span></td>
+                                <td>Manage AI agent (admin)</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/admin/settings</code></td>
+                                <td><span class="badge badge-info">GET/PUT</span></td>
+                                <td>Platform settings (admin)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>WhatsApp Webhooks API</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/webhooks/whatsapp</code></td>
+                                <td><span class="badge badge-warning">GET/POST</span></td>
+                                <td>WhatsApp Cloud API webhook handler</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Error Responses</h2>
+                <div class="code-block">
+                    <pre><span class="comment">// 400 Bad Request</span>
+{
+  "error": "ValidationError",
+  "message": "Invalid email format",
+  "details": { "email": "must be a valid email" }
+}
+
+<span class="comment">// 401 Unauthorized</span>
+{
+  "error": "Unauthorized",
+  "message": "Invalid or expired token"
+}
+
+<span class="comment">// 403 Forbidden</span>
+{
+  "error": "Forbidden",
+  "message": "Upgrade to Pro plan to access this feature"
+}
+
+<span class="comment">// 404 Not Found</span>
+{
+  "error": "NotFound",
+  "message": "Resource not found"
+}
+
+<span class="comment">// 429 Too Many Requests</span>
+{
+  "error": "RateLimitExceeded",
+  "message": "Rate limit exceeded. Try again later.",
+  "retryAfter": 60
+}
+
+<span class="comment">// 500 Internal Server Error</span>
+{
+  "error": "InternalError",
+  "message": "An unexpected error occurred"
+}</pre>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Database Section -->
+            <section id="database">
+                <h1>Database Architecture</h1>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">PostgreSQL</div>
+                            <span class="badge badge-info">Primary</span>
+                        </div>
+                        <p style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1rem;">
+                            User data, subscriptions, audit logs, configuration
+                        </p>
+                        <ul style="font-size: 0.875rem;">
+                            <li>User accounts & authentication</li>
+                            <li>Subscription management</li>
+                            <li>Audit trail</li>
+                            <li>Audit logs (7 years)</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">MongoDB</div>
+                            <span class="badge badge-info">Messages</span>
+                        </div>
+                        <p style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1rem;">
+                            Messages, conversations, sessions
+                        </p>
+                        <ul style="font-size: 0.875rem;">
+                            <li>Message history</li>
+                            <li>Conversation context</li>
+                            <li>Session data</li>
+                            <li>90-day retention</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Redis</div>
+                            <span class="badge badge-info">Cache</span>
+                        </div>
+                        <p style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1rem;">
+                            Caching, rate limiting, sessions
+                        </p>
+                        <ul style="font-size: 0.875rem;">
+                            <li>API response cache</li>
+                            <li>Rate limiting</li>
+                            <li>Session storage</li>
+                            <li>Pub/Sub messaging</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Qdrant</div>
+                            <span class="badge badge-info">Vector</span>
+                        </div>
+                        <p style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1rem;">
+                            Vector embeddings for RAG
+                        </p>
+                        <ul style="font-size: 0.875rem;">
+                            <li>Document embeddings</li>
+                            <li>Semantic search</li>
+                            <li>Similarity matching</li>
+                            <li>1536 dimensions</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Neo4j</div>
+                            <span class="badge badge-info">Graph</span>
+                        </div>
+                        <p style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1rem;">
+                            Knowledge graphs, relationships
+                        </p>
+                        <ul style="font-size: 0.875rem;">
+                            <li>Entity relationships</li>
+                            <li>Knowledge graphs</li>
+                            <li>Graph traversal</li>
+                            <li>Cypher queries</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Kafka</div>
+                            <span class="badge badge-info">Events</span>
+                        </div>
+                        <p style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1rem;">
+                            Event streaming, async messaging
+                        </p>
+                        <ul style="font-size: 0.875rem;">
+                            <li>Message events</li>
+                            <li>Agent tasks</li>
+                            <li>Notifications</li>
+                            <li>Audit trail</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Security Section -->
+            <section id="security">
+                <h1>Security & Compliance</h1>
+
+                <h2>Security Features</h2>
+                <div class="card-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Encryption</div>
+                        <div class="feature-desc">AES-256 at rest, TLS 1.3 in transit</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">RBAC</div>
+                        <div class="feature-desc">Role-based access control with granular permissions</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Audit Logging</div>
+                        <div class="feature-desc">Comprehensive audit trail for all operations</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Rate Limiting</div>
+                        <div class="feature-desc">API protection against abuse and DDoS</div>
+                    </div>
+                </div>
+
+                <h2 id="gdpr">GDPR Compliance</h2>
+                <ul class="checklist">
+                    <li>Data subject rights (access, rectification, erasure)</li>
+                    <li>Consent management with granular controls</li>
+                    <li>Data portability in JSON format</li>
+                    <li>Right to be forgotten implementation</li>
+                    <li>Data retention policies (90 days messages, 7 years audit logs)</li>
+                    <li>Cookie consent banner with preferences</li>
+                    <li>Privacy policy and terms of service</li>
+                    <li>Standard Contractual Clauses for international transfers</li>
+                </ul>
+
+                <h2>Data Retention</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data Type</th>
+                                <th>Retention</th>
+                                <th>Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>User Profile</td>
+                                <td>Until deletion</td>
+                                <td>Permanent delete</td>
+                            </tr>
+                            <tr>
+                                <td>Messages</td>
+                                <td>90 days</td>
+                                <td>Scheduled purge</td>
+                            </tr>
+                            <tr>
+                                <td>AI Context</td>
+                                <td>30 days</td>
+                                <td>Scheduled purge</td>
+                            </tr>
+                            <tr>
+                                <td>Audit Logs</td>
+                                <td>7 years</td>
+                                <td>Archive then delete</td>
+                            </tr>
+                            <tr>
+                                <td>Analytics</td>
+                                <td>12 months</td>
+                                <td>Anonymization</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Kubernetes Section -->
+            <section id="kubernetes">
+                <h1>Kubernetes Infrastructure</h1>
+
+                <h2>Production Deployment</h2>
+                <div class="code-block">
+                    <pre><span class="comment"># Kubernetes Cluster Architecture</span>
+┌─────────────────────────────────────────────────────────────────────┐
+│                    PRODUCTION KUBERNETES CLUSTER                      │
+│                                                                      │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │                    CONTROL PLANE                                 │ │
+│  │   API Server │ etcd │ Controller Manager │ Scheduler           │ │
+│  └─────────────────────────────────────────────────────────────────┘ │
+│                                                                      │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │                      NODE POOLS                                  │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │ │
+│  │  │   General    │  │  AI Compute  │  │    Memory    │          │ │
+│  │  │  (3 nodes)   │  │  (GPU nodes) │  │  Optimized   │          │ │
+│  │  │  api-gateway │  │  agent-svc   │  │  redis       │          │ │
+│  │  │  dashboard   │  │  rag-svc     │  │  mongodb     │          │ │
+│  │  │  auth        │  │              │  │  postgres    │          │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘          │ │
+│  └─────────────────────────────────────────────────────────────────┘ │
+│                                                                      │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │                      ADDONS                                       │ │
+│  │  Ingress-NGINX │ Cert-Manager │ Metrics-Server │ CoreDNS        │ │
+│  │  Istio Service Mesh │ Prometheus Stack │ Loki │ Tempo           │ │
+│  └─────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘</pre>
+                </div>
+
+                <h2>Auto-Scaling Configuration</h2>
+                <div class="card">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Min Replicas</th>
+                                    <th>Max Replicas</th>
+                                    <th>HPA Metric</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>API Gateway</td>
+                                    <td>3</td>
+                                    <td>50</td>
+                                    <td>CPU 70%, Memory 80%</td>
+                                </tr>
+                                <tr>
+                                    <td>Agent Service</td>
+                                    <td>3</td>
+                                    <td>30</td>
+                                    <td>CPU 70%, Memory 80%</td>
+                                </tr>
+                                <tr>
+                                    <td>RAG Service</td>
+                                    <td>2</td>
+                                    <td>20</td>
+                                    <td>CPU 60%, Memory 70%</td>
+                                </tr>
+                                <tr>
+                                    <td>Dashboard</td>
+                                    <td>2</td>
+                                    <td>20</td>
+                                    <td>CPU 70%, Memory 80%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <h2>Service Mesh (Istio)</h2>
+                <ul>
+                    <li>mTLS in STRICT mode for all service-to-service communication</li>
+                    <li>Circuit breakers with configurable thresholds</li>
+                    <li>Rate limiting and quota management</li>
+                    <li>JWT validation for API authentication</li>
+                    <li>Automatic retries with exponential backoff</li>
+                    <li>Traffic management for canary deployments</li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <!-- Monitoring Section -->
+            <section id="monitoring">
+                <h1>Monitoring & Observability</h1>
+
+                <p>Comprehensive monitoring with Prometheus, Grafana, and custom dashboards for production-grade observability.</p>
+
+                <h2>Monitoring Stack</h2>
+
+                <div class="card-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Prometheus</div>
+                        <div class="feature-desc">Metrics collection with 100+ custom metrics for services and infrastructure.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                                <line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Grafana</div>
+                        <div class="feature-desc">Dashboards for system health, service metrics, and business KPIs.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Loki</div>
+                        <div class="feature-desc">Log aggregation with label-based filtering and Grafana integration.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polygon points="10 8 16 12 10 16 10 8"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Tempo</div>
+                        <div class="feature-desc">Distributed tracing with OpenTelemetry for request flow analysis.</div>
+                    </div>
+                </div>
+
+                <h2>Key Dashboards</h2>
+                <ul>
+                    <li><strong>System Overview</strong> - Cluster health, node metrics, pod status</li>
+                    <li><strong>Service Metrics</strong> - Request rate, latency, error rates per service</li>
+                    <li><strong>Agent Performance</strong> - LangGraph execution times, token usage</li>
+                    <li><strong>RAG Quality</strong> - Search relevance, retrieval accuracy</li>
+                    <li><strong>Business KPIs</strong> - Active users, message volume, AI response times</li>
+                    <li><strong>Database Performance</strong> - Query latency, connection pools, cache hit rates</li>
+                </ul>
+
+                <h2>Alerting Rules</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Alert</th>
+                                <th>Condition</th>
+                                <th>Severity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>High Error Rate</td>
+                                <td>Error rate > 5% for 5 minutes</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td>Service Down</td>
+                                <td>Pod not running</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td>High Latency</td>
+                                <td>p99 > 1s for 5 minutes</td>
+                                <td><span class="badge badge-warning">Warning</span></td>
+                            </tr>
+                            <tr>
+                                <td>Memory Pressure</td>
+                                <td>Memory usage > 90%</td>
+                                <td><span class="badge badge-warning">Warning</span></td>
+                            </tr>
+                            <tr>
+                                <td>Disk Space Low</td>
+                                <td>Disk > 85% used</td>
+                                <td><span class="badge badge-warning">Warning</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Quick Start Section -->
+            <section id="quickstart">
+                <h1>Quick Start</h1>
+
+                <h2>Prerequisites</h2>
+                <ul>
+                    <li>Node.js 20+</li>
+                    <li>pnpm 9+</li>
+                    <li>Docker Desktop</li>
+                    <li>kubectl 1.28+</li>
+                </ul>
+
+                <h2>Installation</h2>
+                <div class="code-block">
+                    <pre><span class="comment"># Clone the repository</span>
+git clone https://github.com/whatsapp-ai/platform.git
+cd platform
+
+<span class="comment"># Install dependencies</span>
+pnpm install
+
+<span class="comment"># Copy environment variables</span>
+cp .env.example .env.local
+
+<span class="comment"># Start infrastructure services</span>
+docker-compose up -d postgres mongodb redis kafka zookeeper qdrant neo4j temporal
+
+<span class="comment"># Start development servers</span>
+pnpm dev</pre>
+                </div>
+
+                <h2>Environment Variables</h2>
+                <div class="code-block">
+                    <pre><span class="comment"># Core</span>
+NODE_ENV=development
+PORT=3000
+
+<span class="comment"># Database</span>
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/whatsapp_ai
+MONGODB_URL=mongodb://localhost:27017/whatsapp_ai
+REDIS_URL=redis://localhost:6379
+
+<span class="comment"># WhatsApp</span>
+WHATSAPP_ACCESS_TOKEN=your-token
+WHATSAPP_WEBHOOK_VERIFY_TOKEN=your-verify-token
+
+<span class="comment"># AI</span>
+OPENAI_API_KEY=sk-your-api-key
+
+<span class="comment"># JWT</span>
+JWT_SECRET=your-secret-key-min-256-bits</pre>
+                </div>
+
+                <h2>Production Deployment</h2>
+                <p>Use the deployment script for automated deployment:</p>
+                <div class="code-block">
+                    <pre><span class="comment"># Deploy to production</span>
+./scripts/deploy.sh production
+
+<span class="comment"># Deploy to staging</span>
+./scripts/deploy.sh staging
+
+<span class="comment"># Check health after deployment</span>
+./scripts/health-check.sh</pre>
+                </div>
+                <p>Or manually:</p>
+                <div class="code-block">
+                    <pre><span class="comment"># Build production images</span>
+make build-prod
+
+<span class="comment"># Deploy to Kubernetes</span>
+kubectl apply -k infrastructure/k8s/overlays/production
+
+<span class="comment"># Check deployment status</span>
+kubectl rollout status deployment/api-gateway
+kubectl get pods</pre>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Frontend UI Section -->
+            <section id="frontend-ui">
+                <h1>Frontend UI & Dashboard</h1>
+
+                <p>The platform features a modern React/Next.js dashboard with role-based interfaces for administrators and end users.</p>
+
+                <h2>Frontend Architecture</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Technology</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Next.js 14</td>
+                                <td>React framework with App Router</td>
+                            </tr>
+                            <tr>
+                                <td>TypeScript</td>
+                                <td>Type-safe frontend development</td>
+                            </tr>
+                            <tr>
+                                <td>Tailwind CSS</td>
+                                <td>Utility-first styling</td>
+                            </tr>
+                            <tr>
+                                <td>Radix UI</td>
+                                <td>Accessible UI primitives</td>
+                            </tr>
+                            <tr>
+                                <td>NextAuth.js</td>
+                                <td>Authentication</td>
+                            </tr>
+                            <tr>
+                                <td>Recharts</td>
+                                <td>Data visualization</td>
+                            </tr>
+                            <tr>
+                                <td>Lucide React</td>
+                                <td>Icon library</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Dashboard Structure</h2>
+                <div class="code-block">
+                    <pre>apps/dashboard/src/
+├── app/
+│   ├── layout.tsx           <span class="comment">Root layout with providers</span>
+│   ├── page.tsx             <span class="comment">Landing page</span>
+│   ├── providers.tsx        <span class="comment">React providers</span>
+│   └── globals.css          <span class="comment">Global styles</span>
+├── components/
+│   ├── ui/                  <span class="comment">Base UI components</span>
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── input.tsx
+│   │   └── label.tsx
+│   └── cookie-consent/       <span class="comment">GDPR cookie banner</span>
+├── hooks/                   <span class="comment">Custom React hooks</span>
+│   └── useCookieConsent.ts
+└── lib/                     <span class="comment">Utilities</span>
+    └── utils.ts</pre>
+                </div>
+
+                <h2>UI Components</h2>
+                <p>The dashboard includes a comprehensive component library built on Radix UI primitives:</p>
+
+                <h3>Button Component</h3>
+                <div class="code-block">
+                    <pre><span class="keyword">import</span> { Button } <span class="keyword">from</span> <span class="string">'@/components/ui/button'</span>;
+
+<span class="comment">// Variants</span>
+&lt;Button variant=<span class="string">"default"</span>&gt;Primary&lt;/Button&gt;
+&lt;Button variant=<span class="string">"destructive"</span>&gt;Delete&lt;/Button&gt;
+&lt;Button variant=<span class="string">"outline"</span>&gt;Cancel&lt;/Button&gt;
+&lt;Button variant=<span class="string">"secondary"</span>&gt;Save&lt;/Button&gt;
+&lt;Button variant=<span class="string">"ghost"</span>&gt;Link&lt;/Button&gt;
+
+<span class="comment">// Sizes</span>
+&lt;Button size=<span class="string">"sm"</span>&gt;Small&lt;/Button&gt;
+&lt;Button size=<span class="string">"default"</span>&gt;Default&lt;/Button&gt;
+&lt;Button size=<span class="string">"lg"</span>&gt;Large&lt;/Button&gt;
+&lt;Button size=<span class="string">"icon"</span>&gt;Icon&lt;/Button&gt;</pre>
+                </div>
+
+                <h3>Card Component</h3>
+                <div class="code-block">
+                    <pre><span class="keyword">import</span> { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
+  <span class="keyword">from</span> <span class="string">'@/components/ui/card'</span>;
+
+&lt;Card&gt;
+  &lt;CardHeader&gt;
+    &lt;CardTitle&gt;Title&lt;/CardTitle&gt;
+    &lt;CardDescription&gt;Description text&lt;/CardDescription&gt;
+  &lt;/CardHeader&gt;
+  &lt;CardContent&gt;
+    Content goes here
+  &lt;/CardContent&gt;
+  &lt;CardFooter&gt;
+    &lt;Button&gt;Action&lt;/Button&gt;
+  &lt;/CardFooter&gt;
+&lt;/Card&gt;</pre>
+                </div>
+
+                <h3>Input & Label Components</h3>
+                <div class="code-block">
+                    <pre><span class="keyword">import</span> { Input } <span class="keyword">from</span> <span class="string">'@/components/ui/input'</span>;
+<span class="keyword">import</span> { Label } <span class="keyword">from</span> <span class="string">'@/components/ui/label'</span>;
+
+&lt;div className=<span class="string">"space-y-2"</span>&gt;
+  &lt;Label htmlFor=<span class="string">"email"</span>&gt;Email&lt;/Label&gt;
+  &lt;Input id=<span class="string">"email"</span> type=<span class="string">"email"</span> placeholder=<span class="string">"you@example.com"</span> /&gt;
+&lt;/div&gt;</pre>
+                </div>
+
+                <h2 id="admin-dashboard">Admin Dashboard</h2>
+                <p>Administrative features for platform management:</p>
+
+                <h3>User Management</h3>
+                <ul>
+                    <li>User list with search and filters</li>
+                    <li>User creation and role assignment</li>
+                    <li>Account suspension and deletion</li>
+                    <li>Bulk user operations</li>
+                    <li>Activity logs per user</li>
+                </ul>
+
+                <h3>Agent Configuration</h3>
+                <ul>
+                    <li>Create and configure AI agents</li>
+                    <li>Set agent capabilities and permissions</li>
+                    <li>Training data management</li>
+                    <li>Response templates</li>
+                    <li>Agent performance metrics</li>
+                </ul>
+
+                <h3>Analytics Dashboard</h3>
+                <ul>
+                    <li>Message volume trends</li>
+                    <li>Agent response accuracy</li>
+                    <li>User engagement metrics</li>
+                    <li>Revenue and subscription stats</li>
+                    <li>System health overview</li>
+                </ul>
+
+                <h3>Billing Management</h3>
+                <ul>
+                    <li>Subscription plans configuration</li>
+                    <li>Invoice management</li>
+                    <li>Usage-based billing reports</li>
+                    <li>Payment gateway integration</li>
+                    <li>Refund processing</li>
+                </ul>
+
+                <h2 id="user-dashboard">User Dashboard</h2>
+                <p>End-user features for managing personal AI assistants:</p>
+
+                <h3>Conversation Management</h3>
+                <ul>
+                    <li>Chat history with search</li>
+                    <li>Message threading</li>
+                    <li>File and media sharing</li>
+                    <li>Voice message support</li>
+                    <li>Export conversations</li>
+                </ul>
+
+                <h3>Reminder System</h3>
+                <ul>
+                    <li>Create one-time reminders</li>
+                    <li>Recurring reminders (daily/weekly/monthly)</li>
+                    <li>Shared reminder access</li>
+                    <li>Reminder notifications</li>
+                    <li>Reminder templates</li>
+                </ul>
+
+                <h3>Calendar Integration</h3>
+                <ul>
+                    <li>Google Calendar sync</li>
+                    <li>Outlook integration</li>
+                    <li>Event creation from chat</li>
+                    <li>Meeting scheduling via AI</li>
+                    <li>Two-way sync</li>
+                </ul>
+
+                <h3>Document Intelligence</h3>
+                <ul>
+                    <li>Document upload (PDF, DOCX, TXT)</li>
+                    <li>AI-powered document Q&A</li>
+                    <li>Knowledge base management</li>
+                    <li>Search across documents</li>
+                    <li>Document sharing</li>
+                </ul>
+
+                <h2 id="landing-page">Landing Page Features</h2>
+                <p>The landing page has been modernized to match the mysmartassistant.ai design:</p>
+
+                <h3>Design System</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Element</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Brand Color (Primary)</td>
+                                <td>#25D366 (WhatsApp Green)</td>
+                            </tr>
+                            <tr>
+                                <td>Brand Color (Dark)</td>
+                                <td>#128C7E</td>
+                            </tr>
+                            <tr>
+                                <td>Font Family</td>
+                                <td>Funnel Sans</td>
+                            </tr>
+                            <tr>
+                                <td>Background Pattern</td>
+                                <td>Dot grid pattern (24px spacing)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Hero Section</h3>
+                <ul>
+                    <li>Two-column layout with text left and phone mockup right</li>
+                    <li>WhatsApp-style chat interface mockup showing demo conversation</li>
+                    <li>AI assistant sparkle icon</li>
+                    <li>Call-to-action button with green brand color</li>
+                    <li>Responsive design (stacks on mobile)</li>
+                </ul>
+
+                <h3>Features Grid</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Icon</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>WhatsApp Integration</td>
+                                <td>MessageSquare</td>
+                                <td>Connect with AI agents via WhatsApp</td>
+                            </tr>
+                            <tr>
+                                <td>Smart Reminders</td>
+                                <td>Bell</td>
+                                <td>Create one-time and recurring reminders</td>
+                            </tr>
+                            <tr>
+                                <td>Calendar Sync</td>
+                                <td>Calendar</td>
+                                <td>Two-way sync with Google & Outlook</td>
+                            </tr>
+                            <tr>
+                                <td>Document Intelligence</td>
+                                <td>FileText</td>
+                                <td>AI-powered document search with RAG</td>
+                            </tr>
+                            <tr>
+                                <td>Multi-Agent AI</td>
+                                <td>Bot</td>
+                                <td>Specialized agents collaborating</td>
+                            </tr>
+                            <tr>
+                                <td>Enterprise Security</td>
+                                <td>Shield</td>
+                                <td>RBAC, encryption, compliance-ready</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Authentication</h3>
+                <ul>
+                    <li>Email/password login and registration</li>
+                    <li>Toggle between login and signup</li>
+                    <li>Loading states</li>
+                    <li>Error handling</li>
+                </ul>
+
+                <h3>Pricing Section</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Price</th>
+                                <th>Key Features</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Free</td>
+                                <td>$0/mo</td>
+                                <td>5 reminders/day, 1 agent, 100 messages/month</td>
+                            </tr>
+                            <tr>
+                                <td>Pro</td>
+                                <td>$29/mo</td>
+                                <td>Unlimited reminders, 5 agents, 5000 messages, Calendar sync, Document RAG</td>
+                            </tr>
+                            <tr>
+                                <td>Enterprise</td>
+                                <td>$99/mo</td>
+                                <td>Unlimited everything, Custom integrations, Dedicated support, SLA guarantee</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Cookie Consent Banner</h2>
+                <p>GDPR-compliant cookie consent component:</p>
+                <div class="code-block">
+                    <pre><span class="keyword">import</span> { CookieConsentBanner } <span class="keyword">from</span> <span class="string">'@/components/cookie-consent'</span>;
+<span class="keyword">import</span> { useCookieConsent } <span class="keyword">from</span> <span class="string">'@/hooks/useCookieConsent'</span>;
+
+<span class="keyword">const</span> { consent, accept, decline, hasConsented } = useCookieConsent();
+
+<span class="keyword">if</span> (!hasConsented()) {
+  &lt;CookieConsentBanner onAccept={accept} onDecline={decline} /&gt;
+}</pre>
+                </div>
+                <ul>
+                    <li>GDPR-compliant consent tracking</li>
+                    <li>Cookie preference storage</li>
+                    <li>Accept/decline options</li>
+                    <li>Customizable styling</li>
+                </ul>
+
+                <h2 id="responsive-design">Responsive Design</h2>
+                <p>All frontend pages are fully responsive and mobile-optimized. The design adapts seamlessly across different screen sizes.</p>
+
+                <h3>Breakpoints</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Breakpoint</th>
+                                <th>Width</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>sm</code></td>
+                                <td>640px</td>
+                                <td>Small tablets</td>
+                            </tr>
+                            <tr>
+                                <td><code>md</code></td>
+                                <td>768px</td>
+                                <td>Tablets</td>
+                            </tr>
+                            <tr>
+                                <td><code>lg</code></td>
+                                <td>1024px</td>
+                                <td>Laptops/Small desktops</td>
+                            </tr>
+                            <tr>
+                                <td><code>xl</code></td>
+                                <td>1280px</td>
+                                <td>Desktops</td>
+                            </tr>
+                            <tr>
+                                <td><code>2xl</code></td>
+                                <td>1536px</td>
+                                <td>Large screens</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Page Responsiveness</h3>
+                <div class="responsive-grid">
+                    <div class="responsive-card">
+                        <h4>Landing Page</h4>
+                        <p>Hero stacks vertically on mobile, phone mockup moves to top. Features grid collapses to single column.</p>
+                        <div class="device-badges">
+                            <span class="device-badge">📱 Mobile</span>
+                            <span class="device-badge">📱 Tablet</span>
+                            <span class="device-badge">💻 Desktop</span>
+                        </div>
+                    </div>
+                    <div class="responsive-card">
+                        <h4>User Dashboard</h4>
+                        <p>Fixed sidebar replaced with hamburger menu. Stats grid adapts from 4 to 2 to 1 column. Mobile navigation drawer.</p>
+                        <div class="device-badges">
+                            <span class="device-badge">📱 Mobile</span>
+                            <span class="device-badge">📱 Tablet</span>
+                            <span class="device-badge">💻 Desktop</span>
+                        </div>
+                    </div>
+                    <div class="responsive-card">
+                        <h4>Admin Dashboard</h4>
+                        <p>Dark sidebar hidden on mobile, replaced with header bar and hamburger menu. Tabs remain functional on all sizes.</p>
+                        <div class="device-badges">
+                            <span class="device-badge">📱 Mobile</span>
+                            <span class="device-badge">📱 Tablet</span>
+                            <span class="device-badge">💻 Desktop</span>
+                        </div>
+                    </div>
+                    <div class="responsive-card">
+                        <h4>Legal Pages</h4>
+                        <p>Centered content column with comfortable reading width. Consistent padding and typography across devices.</p>
+                        <div class="device-badges">
+                            <span class="device-badge">📱 Mobile</span>
+                            <span class="device-badge">📱 Tablet</span>
+                            <span class="device-badge">💻 Desktop</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Mobile Navigation</h3>
+                <p>Both dashboard pages feature slide-out mobile navigation:</p>
+                <ul>
+                    <li><strong>Hamburger Menu:</strong> Fixed header button toggles navigation drawer</li>
+                    <li><strong>Overlay:</strong> Semi-transparent backdrop closes menu when tapped</li>
+                    <li><strong>User Profile:</strong> Avatar and email shown at bottom of drawer</li>
+                    <li><strong>Sign Out:</strong> Quick access logout button</li>
+                </ul>
+
+                <h3>Design System</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Element</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Brand Green</td>
+                                <td><code>#25D366</code></td>
+                            </tr>
+                            <tr>
+                                <td>Brand Dark</td>
+                                <td><code>#128C7E</code></td>
+                            </tr>
+                            <tr>
+                                <td>Primary Font</td>
+                                <td>Funnel Sans</td>
+                            </tr>
+                            <tr>
+                                <td>Border Radius</td>
+                                <td>0.5rem (8px)</td>
+                            </tr>
+                            <tr>
+                                <td>Max Content Width</td>
+                                <td>1200px</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>UI Screenshots</h2>
+                <p>The following screenshots illustrate the key user interfaces of the platform. To capture these screenshots, run <code>pnpm dev</code> and navigate to the specified URLs.</p>
+
+                <h3 id="screenshot-landing">1. Landing Page - Hero Section</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/</code></p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">📱</span>
+                        <p class="screenshot-label">Landing Page Hero Section</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot placeholder - run dev server to capture</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Navbar:</strong> Fixed navigation with Bot icon + "whatsAppAgent" logo, "Try for Free" green CTA button linking to #plans</li>
+                    <li><strong>Hero Section:</strong> Two-column layout with sparkle star icon, bold "AI Assistant on WhatsApp" headline, subtext about managing meetings/reminders/notes/documents, green "Try For Free" CTA button</li>
+                    <li><strong>Phone Mockup:</strong> Right side shows iPhone-style container with WhatsApp chat demo video playing</li>
+                    <li><strong>Background:</strong> Dot grid pattern on subtle green gradient</li>
+                </ul>
+
+                <h3 id="screenshot-landing-video">2. Landing Page - Video Section</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/</code> (scroll past hero)</p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">🎬</span>
+                        <p class="screenshot-label">Video Showcase Section</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot: docs/screenshots/landing-video.png</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Video Thumbnail:</strong> Full-width image from CDN showing product demo preview</li>
+                    <li><strong>Play Button:</strong> Centered circular play button with glass blur effect</li>
+                    <li><strong>Rounded Corners:</strong> 16px border radius on video container with shadow</li>
+                </ul>
+
+                <h3 id="screenshot-landing-features">3. Landing Page - Features Section</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/</code> (scroll to features)</p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">🎯</span>
+                        <p class="screenshot-label">Features Grid - "Unlock the Full Power"</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot: docs/screenshots/landing-features.png</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Section Title:</strong> "Unlock the Full Power of Your Basic Plan"</li>
+                    <li><strong>Feature Cards:</strong> 4-card responsive grid (4 columns desktop, 2 tablet, 1 mobile)
+                        <ul>
+                            <li>Smart Scheduling (Calendar icon, green background)</li>
+                            <li>Instant Reminders (Bell icon, yellow background)</li>
+                            <li>Voice Notes (FileText icon, blue background)</li>
+                            <li>AI Q&A (Bot icon, purple background)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Card Design:</strong> White cards with colored icon badges, bold title, description text</li>
+                    <li><strong>Hover Effect:</strong> Cards lift and increase shadow on hover</li>
+                </ul>
+
+                <h3 id="screenshot-landing-pricing">4. Landing Page - Pricing Section</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/#plans</code></p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">💳</span>
+                        <p class="screenshot-label">Pricing Plans - "Choose Your Plan"</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot: docs/screenshots/landing-pricing.png</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Section Title:</strong> "Choose Your Plan"</li>
+                    <li><strong>Pricing Cards:</strong> 3-column grid (Free $0, Pro $29/mo, Enterprise $99/mo)</li>
+                    <li><strong>Pro Card:</strong> Highlighted with green border, gradient background, "Most Popular" badge</li>
+                    <li><strong>Feature Lists:</strong> Checkmarks with included features per plan</li>
+                    <li><strong>CTA Buttons:</strong> "Get Started", "Start Free Trial" (opens checkout modal), "Contact Sales"</li>
+                </ul>
+
+                <h3 id="screenshot-landing-ai">5. Landing Page - AI Technology Section</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/</code> (scroll to AI section)</p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">🤖</span>
+                        <p class="screenshot-label">AI Technology Showcase</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot: docs/screenshots/landing-ai.png</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Centered Image:</strong> Animated AI ring/glow visualization from CDN</li>
+                    <li><strong>Background:</strong> White to light green gradient</li>
+                    <li><strong>Max Width:</strong> 426px image centered in 600px container</li>
+                </ul>
+
+                <h3 id="screenshot-landing-faq">6. Landing Page - FAQ Section</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/</code> (scroll to FAQ)</p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">❓</span>
+                        <p class="screenshot-label">FAQ Section - "Questions? Let's make life simple"</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot: docs/screenshots/landing-faq.png</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Section Title:</strong> "Questions? Let's make life simple."</li>
+                    <li><strong>FAQ Items:</strong> Accordion-style expandable questions
+                        <ul>
+                            <li>How do I get started?</li>
+                            <li>Is my data secure?</li>
+                            <li>Can I use it on multiple devices?</li>
+                            <li>What happens after the free trial?</li>
+                        </ul>
+                    </li>
+                    <li><strong>Interactive:</strong> Click to expand/collapse answers with chevron rotation animation</li>
+                </ul>
+
+                <h3 id="screenshot-landing-cta">7. Landing Page - Final CTA Section</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/</code> (scroll to final CTA)</p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">🚀</span>
+                        <p class="screenshot-label">Final CTA with AI Assistant Photo</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot: docs/screenshots/landing-cta.png</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Profile Photo:</strong> Professional woman image (280px circular) with green glow pulse animation</li>
+                    <li><strong>Title:</strong> "Experience the future of personal productivity — powered by AI & WhatsApp"</li>
+                    <li><strong>Subtitle:</strong> "Manage meetings, reminders and all your document content in one place"</li>
+                    <li><strong>CTA Button:</strong> "Try Free Now" green button linking to #plans</li>
+                    <li><strong>Background:</strong> Light green to white gradient</li>
+                </ul>
+
+                <h3 id="screenshot-landing-footer">8. Landing Page - Footer</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/</code> (scroll to footer)</p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">📋</span>
+                        <p class="screenshot-label">Footer with Social Links</p>
+                        <p style="font-size: 0.875rem; color: var(--gray-500);">Screenshot: docs/screenshots/landing-footer.png</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>3-Column Layout:</strong>
+                        <ul>
+                            <li><strong>Column 1:</strong> Logo + Bot icon, support email (support@mysmartassistant.ai)</li>
+                            <li><strong>Column 2:</strong> "Support" - Contact Us, Plans & Payment, FAQ links</li>
+                            <li><strong>Column 3:</strong> "Legal" - Privacy Policy, Terms and Conditions, Cancellation and Refund Policy links</li>
+                        </ul>
+                    </li>
+                    <li><strong>Social Icons:</strong> Centered row with Twitter, Facebook, Instagram, LinkedIn icons (40px circular buttons)</li>
+                    <li><strong>Bottom Text:</strong> "© 2026 whatsAppAgent powered by Scripto Technology. All rights reserved."</li>
+                    <li><strong>Background:</strong> Dark (#111827) with white/gray text</li>
+                </ul>
+
+                <h3 id="screenshot-user-dashboard">4. User Dashboard</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/dashboard</code></p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">👤</span>
+                        <p class="screenshot-label">User Dashboard Overview</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Sidebar:</strong> Left sidebar with Bot logo, navigation items (Conversations, Reminders, Calendar, Documents, Settings), user avatar and info, sign out button</li>
+                    <li><strong>Header:</strong> Page title "Dashboard" with toggle sidebar button and "Open WhatsApp" link</li>
+                    <li><strong>Stats Grid:</strong> 4 stat cards showing Total Messages (1,234), Reminders Set (89), Meetings Scheduled (24), Documents Analyzed (12)</li>
+                    <li><strong>Recent Conversations:</strong> List showing recent chat requests with status indicators</li>
+                    <li><strong>Upcoming Reminders:</strong> Card listing next scheduled reminders</li>
+                    <li><strong>Quick Actions:</strong> Gradient banner with icons for New Chat, Set Reminder, Schedule Meeting, Upload Document</li>
+                </ul>
+
+                <h3 id="screenshot-admin-dashboard">5. Admin Dashboard - Overview</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/admin</code></p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">⚙️</span>
+                        <p class="screenshot-label">Admin Dashboard - Overview</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Sidebar:</strong> Dark gray sidebar with Admin logo, navigation (Overview, Users, Messages, Logs, Settings)</li>
+                    <li><strong>Active Tab Indicator:</strong> Green highlight on selected navigation item</li>
+                    <li><strong>Header:</strong> "Overview" title with green "System Online" status badge</li>
+                    <li><strong>Stats Cards:</strong> 4 cards showing Total Users (2,847), Active Today (1,234), Messages Today (45,678), System Health (99.9%)</li>
+                    <li><strong>Trend Indicators:</strong> Percentage change badges (+12%, +8%, etc.) on stats</li>
+                </ul>
+
+                <h3 id="screenshot-admin-users">6. Admin Dashboard - User Management</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/admin</code> (click Users tab)</p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">👥</span>
+                        <p class="screenshot-label">Admin Dashboard - User Management</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Table Header:</strong> "User Management" title with green "Add User" button</li>
+                    <li><strong>User Table:</strong> Columns for User (avatar + name + email), Plan (Free/Pro/Enterprise badges), Status (active/inactive), Messages count, Actions</li>
+                    <li><strong>User Avatars:</strong> Circular badges with initials on green gradient background</li>
+                    <li><strong>Plan Badges:</strong> Color-coded pills (purple for Enterprise, blue for Pro, gray for Free)</li>
+                    <li><strong>Action Links:</strong> "Edit" links for each user row</li>
+                </ul>
+
+                <h3 id="screenshot-privacy">7. Privacy Policy Page</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/privacy</code></p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">🔒</span>
+                        <p class="screenshot-label">Privacy Policy</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Header:</strong> Back arrow, Bot logo, "My Smart Assistant" branding</li>
+                    <li><strong>Page Title:</strong> "Privacy Policy" with last updated date</li>
+                    <li><strong>Content Sections:</strong> White rounded cards for each policy section (Information We Collect, How We Use Your Information, etc.)</li>
+                    <li><strong>Section Headers:</strong> Bold numbered headings (1. Information We Collect, 2. How We Use Your Information, etc.)</li>
+                    <li><strong>Lists:</strong> Bulleted lists with detailed policy points</li>
+                </ul>
+
+                <h3 id="screenshot-terms">8. Terms of Service Page</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/terms</code></p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">📄</span>
+                        <p class="screenshot-label">Terms of Service</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Layout:</strong> Same design as Privacy Policy page</li>
+                    <li><strong>Content:</strong> Numbered sections covering terms, account registration, acceptable use, user content, IP rights, service availability, liability, indemnification</li>
+                    <li><strong>Visual Style:</strong> Clean, professional legal document styling</li>
+                </ul>
+
+                <h3 id="screenshot-about">9. About Page</h3>
+                <p><strong>URL:</strong> <code>http://localhost:3000/about</code></p>
+                <div class="screenshot-placeholder">
+                    <div class="screenshot-mockup">
+                        <span class="screenshot-icon">ℹ️</span>
+                        <p class="screenshot-label">About Page</p>
+                    </div>
+                </div>
+                <p><strong>Screenshot Description:</strong></p>
+                <ul>
+                    <li><strong>Hero Section:</strong> Gradient background, bold headline "AI That Works Where You Already Work", description text, two CTA buttons</li>
+                    <li><strong>Mission Section:</strong> Centered text explaining the company mission</li>
+                    <li><strong>Features Grid:</strong> 6 feature cards with icons (WhatsApp Integration, Smart Scheduling, etc.)</li>
+                    <li><strong>Values Section:</strong> 4 value cards (User-First, Privacy & Security, Accessibility, Simplicity)</li>
+                    <li><strong>Team Section:</strong> Grid of team member avatars with names and roles</li>
+                    <li><strong>Stats Banner:</strong> Green gradient bar with key metrics (10K+ Users, 1M+ Messages, 99.9% Uptime, 4.8/5 Rating)</li>
+                </ul>
+
+                <h3>Screenshot Capture Instructions</h3>
+                <div class="code-block">
+                    <pre><span class="comment"># 1. Start the development server</span>
+pnpm dev
+
+<span class="comment"># 2. Open http://localhost:3000 in your browser</span>
+
+<span class="comment"># 3. Capture screenshots using browser DevTools:</span>
+<span class="comment"># - Chrome: Cmd+Shift+P > "Capture full size screenshot"</span>
+<span class="comment"># - Or use browser's built-in screenshot tool</span>
+
+<span class="comment"># 4. Recommended screenshot sizes:</span>
+<span class="comment"># - Landing Page Hero: 1920x1080</span>
+<span class="comment"># - Landing Sections: 1200x800</span>
+<span class="comment"># - Dashboard pages: 1440x900</span>
+<span class="comment"># - Legal pages: 1200x1600 (A4 ratio)</span>
+
+<span class="comment"># 5. Save screenshots to docs/screenshots/ with these names:</span>
+<span class="comment"># landing-hero.png      - Hero section with phone mockup</span>
+<span class="comment"># landing-video.png     - Video showcase section</span>
+<span class="comment"># landing-features.png  - "Unlock the Full Power" features grid</span>
+<span class="comment"># landing-pricing.png  - Pricing plans section</span>
+<span class="comment"># landing-ai.png       - AI technology showcase</span>
+<span class="comment"># landing-faq.png      - FAQ accordion section</span>
+<span class="comment"># landing-cta.png      - Final CTA with profile photo</span>
+<span class="comment"># landing-footer.png   - Footer with social links</span>
+
+<span class="comment"># 6. Update placeholder divs with actual img tags:</span>
+<span class="comment"># &lt;img src="../screenshots/landing-hero.png" /&gt;</span></pre>
+                </div>
+
+                <h3>Quick Screenshot Guide for Individual Sections</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Scroll Position</th>
+                                <th>Filename</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Hero</td>
+                                <td>Top of page</td>
+                                <td>landing-hero.png</td>
+                            </tr>
+                            <tr>
+                                <td>Video</td>
+                                <td>~100vh scroll</td>
+                                <td>landing-video.png</td>
+                            </tr>
+                            <tr>
+                                <td>Features</td>
+                                <td>~150vh scroll</td>
+                                <td>landing-features.png</td>
+                            </tr>
+                            <tr>
+                                <td>Pricing</td>
+                                <td>~200vh scroll or click "Try for Free"</td>
+                                <td>landing-pricing.png</td>
+                            </tr>
+                            <tr>
+                                <td>AI Showcase</td>
+                                <td>~250vh scroll</td>
+                                <td>landing-ai.png</td>
+                            </tr>
+                            <tr>
+                                <td>FAQ</td>
+                                <td>~300vh scroll</td>
+                                <td>landing-faq.png</td>
+                            </tr>
+                            <tr>
+                                <td>Final CTA</td>
+                                <td>~350vh scroll</td>
+                                <td>landing-cta.png</td>
+                            </tr>
+                            <tr>
+                                <td>Footer</td>
+                                <td>Bottom of page</td>
+                                <td>landing-footer.png</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                    <img src="../assets/screenshots/privacy-policy.png" alt="Privacy Policy" />
+                    <img src="../assets/screenshots/terms-of-service.png" alt="Terms of Service" />
+                    <img src="../assets/screenshots/about-page.png" alt="About Page" />
+                </div>
+                -->
+
+                <h2 id="legal-pages">Legal Pages</h2>
+                <p>Legal pages for compliance and user trust:</p>
+
+                <h3>Privacy Policy</h3>
+                <p><strong>Route:</strong> <code>/privacy</code></p>
+                <p>Comprehensive privacy policy covering:</p>
+                <ul>
+                    <li>Information collection (name, email, phone, usage data)</li>
+                    <li>Data usage and processing purposes</li>
+                    <li>Data sharing with third parties</li>
+                    <li>Data retention policies</li>
+                    <li>User rights under GDPR</li>
+                    <li>Children's privacy (13+ requirement)</li>
+                    <li>International data transfers</li>
+                    <li>Contact information for privacy inquiries</li>
+                </ul>
+
+                <h3>Terms of Service</h3>
+                <p><strong>Route:</strong> <code>/terms</code></p>
+                <p>Terms of service covering:</p>
+                <ul>
+                    <li>Acceptance of terms</li>
+                    <li>Account registration requirements</li>
+                    <li>Acceptable use policy</li>
+                    <li>User content and ownership</li>
+                    <li>Intellectual property rights</li>
+                    <li>Service availability and modifications</li>
+                    <li>Limitation of liability</li>
+                    <li>Indemnification clause</li>
+                    <li>Governing law (California)</li>
+                    <li>Dispute resolution process</li>
+                </ul>
+
+                <h3>Cookie Policy</h3>
+                <p><strong>Route:</strong> <code>/cookies</code></p>
+                <p>Cookie policy detailing:</p>
+                <ul>
+                    <li>Types of cookies used (essential, analytics, functional)</li>
+                    <li>Purpose of each cookie type</li>
+                    <li>Third-party cookie providers</li>
+                    <li>User consent requirements</li>
+                    <li>Cookie management instructions</li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <!-- Configuration Section -->
+            <section id="configuration">
+                <h1>Configuration Reference</h1>
+
+                <h2>Service Ports</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Port</th>
+                                <th>Health Endpoint</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>API Gateway</td>
+                                <td>3000</td>
+                                <td>/health</td>
+                            </tr>
+                            <tr>
+                                <td>Agent Service</td>
+                                <td>3001</td>
+                                <td>/health</td>
+                            </tr>
+                            <tr>
+                                <td>RAG Service</td>
+                                <td>3002</td>
+                                <td>/health</td>
+                            </tr>
+                            <tr>
+                                <td>Messaging Service</td>
+                                <td>3003</td>
+                                <td>/health</td>
+                            </tr>
+                            <tr>
+                                <td>Workflow Service</td>
+                                <td>3004</td>
+                                <td>/health</td>
+                            </tr>
+                            <tr>
+                                <td>Dashboard</td>
+                                <td>3000 (Next.js)</td>
+                                <td>/api/health</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Kafka Topics</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>Purpose</th>
+                                <th>Partitions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>agent.intent</td>
+                                <td>Intent classification requests</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td>agent.task</td>
+                                <td>Agent task execution</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td>agent.result</td>
+                                <td>Agent execution results</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td>agent.notify</td>
+                                <td>Agent notifications</td>
+                                <td>6</td>
+                            </tr>
+                            <tr>
+                                <td>messages.inbound</td>
+                                <td>Incoming WhatsApp messages</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td>messages.outbound</td>
+                                <td>Outgoing WhatsApp messages</td>
+                                <td>12</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Development Scripts Section -->
+            <section id="scripts">
+                <h1>Development Scripts</h1>
+
+                <p>Available shell scripts for development, deployment, and maintenance:</p>
+
+                <h2>Setup Script</h2>
+                <div class="code-block">
+                    <pre>./scripts/setup.sh</pre>
+                </div>
+                <p>Comprehensive setup script that:</p>
+                <ul>
+                    <li>Checks and installs prerequisites (Node.js, pnpm, Docker)</li>
+                    <li>Installs project dependencies</li>
+                    <li>Generates Prisma client</li>
+                    <li>Creates environment configuration files</li>
+                    <li>Builds all packages and services</li>
+                    <li>Sets up Docker containers</li>
+                    <li>Runs database migrations</li>
+                </ul>
+
+                <h2>Development Script</h2>
+                <div class="code-block">
+                    <pre>./scripts/dev.sh</pre>
+                </div>
+                <p>Starts all services in development mode using Turbo with parallel execution.</p>
+
+                <h2>Deployment Script</h2>
+                <div class="code-block">
+                    <pre>./scripts/deploy.sh [environment]</pre>
+                </div>
+                <p>Deploy to different environments:</p>
+                <ul>
+                    <li><code>dev</code> - Local development deployment</li>
+                    <li><code>staging</code> - Staging environment with K8s</li>
+                    <li><code>production</code> - Production deployment (default)</li>
+                </ul>
+                <p>Steps: Run migrations → Build packages → Docker images → Push to registry → K8s deployment</p>
+
+                <h2>Health Check Script</h2>
+                <div class="code-block">
+                    <pre>./scripts/health-check.sh</pre>
+                </div>
+                <p>Checks health status of all services:</p>
+                <ul>
+                    <li>API Gateway (health, ready)</li>
+                    <li>Dashboard</li>
+                    <li>PostgreSQL, Redis, MongoDB</li>
+                    <li>AI Services (Agent, RAG, WhatsApp API)</li>
+                </ul>
+
+                <h2>Migration Script</h2>
+                <div class="code-block">
+                    <pre>./scripts/migrate.sh [command]</pre>
+                </div>
+                <p>Database migration management:</p>
+                <ul>
+                    <li><code>status</code> - Check migration status</li>
+                    <li><code>up</code> - Run pending migrations</li>
+                    <li><code>down</code> - Rollback last migration</li>
+                    <li><code>deploy</code> - Deploy migrations (production)</li>
+                    <li><code>create &lt;name&gt;</code> - Create new migration</li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <!-- Testing Section -->
+            <section id="testing">
+                <h1>Testing</h1>
+
+                <p>The platform includes comprehensive test suites using Jest with ts-jest.</p>
+
+                <h2>Test Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">372</div>
+                        <div class="stat-label">Tests Passing</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Test Suites</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Packages Tested</div>
+                    </div>
+                </div>
+
+                <h2>Test Categories</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Packages</td>
+                                <td>config, common, events, queue, sentry, whatsapp, cdn, gdpr</td>
+                            </tr>
+                            <tr>
+                                <td>Services</td>
+                                <td>api-gateway, agent, messaging, rag, workflow</td>
+                            </tr>
+                            <tr>
+                                <td>Frontend</td>
+                                <td>Components, utilities, hooks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Running Tests</h2>
+                <div class="code-block">
+                    <pre><span class="comment"># Run all tests</span>
+pnpm test
+
+<span class="comment"># Run with coverage</span>
+pnpm jest tests/unit --coverage
+
+<span class="comment"># Run specific test file</span>
+pnpm jest tests/unit/packages/queue.test.ts</pre>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Roadmap Section -->
+            <section id="roadmap">
+                <h1>Development Roadmap</h1>
+
+                <h2>Phase 1: Foundation (Weeks 1-4)</h2>
+                <span class="badge badge-success">Completed</span>
+                <ul>
+                    <li>Project structure and monorepo setup</li>
+                    <li>Core packages (common, config, database, queue, events, ai, whatsapp)</li>
+                    <li>API Gateway with authentication</li>
+                    <li>PostgreSQL + MongoDB + Redis connections</li>
+                    <li>Basic CI/CD pipeline</li>
+                </ul>
+
+                <h2>Phase 2: Core Services (Weeks 5-8)</h2>
+                <span class="badge badge-success">Completed</span>
+                <ul>
+                    <li>Multi-agent orchestration system with LangGraph</li>
+                    <li>WhatsApp Cloud API integration</li>
+                    <li>Webhook processor for incoming messages</li>
+                    <li>Message processing pipeline</li>
+                    <li>Basic reminder functionality</li>
+                </ul>
+
+                <h2>Phase 3: AI Features (Weeks 9-12)</h2>
+                <span class="badge badge-success">Completed</span>
+                <ul>
+                    <li>RAG pipeline with LlamaIndex</li>
+                    <li>Vector database integration (Qdrant)</li>
+                    <li>Graph database integration (Neo4j)</li>
+                    <li>Document indexing and search</li>
+                    <li>Voice message processing (Whisper)</li>
+                </ul>
+
+                <h2>Phase 4: Advanced Features (Weeks 13-16)</h2>
+                <span class="badge badge-success">Completed</span>
+                <ul>
+                    <li>Calendar sync (Google + Outlook)</li>
+                    <li>Temporal workflow orchestration</li>
+                    <li>Autonomous AI workflows</li>
+                    <li>Document intelligence (summarization, Q&A)</li>
+                    <li>Multi-agent collaboration</li>
+                </ul>
+
+                <h2>Phase 5: Frontend & UX (Weeks 17-20)</h2>
+                <span class="badge badge-success">Completed</span>
+                <ul>
+                    <li>Next.js dashboard application</li>
+                    <li>User authentication flows</li>
+                    <li>Reminder management UI</li>
+                    <li>Document management UI</li>
+                    <li>Conversation history</li>
+                </ul>
+
+                <h2>Phase 6: Production Readiness (Weeks 21-24)</h2>
+                <span class="badge badge-success">Completed</span>
+                <ul>
+                    <li>Kubernetes deployment manifests</li>
+                    <li>Monitoring and observability (Prometheus/Grafana)</li>
+                    <li>Error tracking (Sentry)</li>
+                    <li>Load testing and optimization</li>
+                    <li>Security audit</li>
+                    <li>Production Kubernetes deployment</li>
+                    <li>GDPR compliance</li>
+                    <li>Documentation</li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <!-- Footer -->
+            <footer style="text-align: center; padding: 3rem 0; color: var(--gray-500); font-size: 0.875rem;">
+                <p>WhatsApp AI Platform Documentation</p>
+                <p>Version 1.0.0 | Last updated: March 30, 2026</p>
+                <p style="margin-top: 1rem;">
+                    <a href="https://github.com/whatsapp-ai/platform" style="color: var(--primary);">GitHub</a> ·
+                    <a href="/legal/privacy-policy" style="color: var(--primary);">Privacy Policy</a> ·
+                    <a href="/legal/terms-of-service" style="color: var(--primary);">Terms of Service</a>
+                </p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        // Smooth scroll and active nav link highlighting
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Update active state
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Update breadcrumb
+                        document.getElementById('current-page').textContent = this.textContent;
+                    }
+                }
+            });
+        });
+
+        // Intersection Observer for active nav highlighting
+        const sections = document.querySelectorAll('section[id]');
+        const observerOptions = {
+            rootMargin: '-20% 0px -80% 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    const link = document.querySelector(`.nav-link[href="#${id}"]`);
+                    if (link) {
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                        document.getElementById('current-page').textContent = link.textContent;
+                    }
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>

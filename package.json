@@ -1,0 +1,48 @@
+{
+  "name": "whatsapp-ai-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade SaaS WhatsApp AI Agent Platform with Multi-Agent & Graph RAG",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
+    "typecheck": "turbo typecheck",
+    "docker:build": "turbo docker:build",
+    "docker:up": "docker-compose -f docker-compose.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.yml down",
+    "deploy:staging": "turbo deploy --filter=production",
+    "db:migrate": "turbo db:migrate",
+    "db:seed": "turbo db:seed"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.11.0",
+    "@types/react-test-renderer": "^19.1.0",
+    "eslint": "^8.57.0",
+    "husky": "^9.0.0",
+    "jest": "^30.3.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.0",
+    "react-test-renderer": "^19.2.4",
+    "ts-jest": "^29.4.6",
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0",
+    "vitest-mock-extended": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

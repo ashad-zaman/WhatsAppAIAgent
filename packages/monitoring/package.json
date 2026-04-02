@@ -1,0 +1,41 @@
+{
+  "name": "@whatsapp-ai/monitoring",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./metrics": "./dist/metrics.js",
+    "./tracing": "./dist/tracing.js",
+    "./logging": "./dist/logging.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "prom-client": "^15.1.0",
+    "winston": "^3.11.0",
+    "winston-loki": "^6.0.8",
+    "@opentelemetry/api": "^1.7.0",
+    "@opentelemetry/sdk-node": "^0.46.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.40.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.46.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.46.0",
+    "@opentelemetry/resources": "^1.19.0",
+    "@opentelemetry/semantic-conventions": "^1.19.0",
+    "@opentelemetry/instrumentation-express": "^0.34.0",
+    "@opentelemetry/instrumentation-http": "^0.46.0",
+    "@opentelemetry/instrumentation-pg": "^0.37.0",
+    "@opentelemetry/instrumentation-redis-4": "^0.35.0"
+  },
+  "devDependencies": {
+    "@types/winston": "^2.4.4",
+    "typescript": "^5.4.0"
+  }
+}
